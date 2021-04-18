@@ -31,8 +31,9 @@ class Simulate():
 		#Store state list
 		self.store_state()
 
-	def onStartTimeStep(self,interactions_filename,events_filename,current_time_step):
+	def onStartTimeStep(self,interactions_filename,events_filename,current_time_step, total_steps_per_cycle):
 		self.current_time_step=current_time_step
+		self.total_steps_per_cycle=total_steps_per_cycle
 
 		for agent in self.agents_obj.agents.values():
 			agent.new_time_step()
@@ -47,10 +48,10 @@ class Simulate():
 		#Add Interactions to agents
 		if interactions_filename!=None:
 			ReadFile.ReadInteractions(interactions_filename,self.config_obj,self.agents_obj)
-		
+
 		#Add events to locations
 		if events_filename!=None:
-			ReadFile.ReadEvents(events_filename,self.config_obj,self.locations_obj)
+			ReadFile.ReadEvents(events_filename,self.config_obj,self.locations_obj,self.current_time_step, self.total_steps_per_cycle)
 
 			#Update event info to agents from location
 			for location in self.locations_obj.locations.values():

@@ -43,7 +43,7 @@ class World():
 			else:
 				events_filename=self.eventFiles_list[i%len(self.eventFiles_list)]
 
-			sim_obj.onStartTimeStep(interactions_filename,events_filename,i)
+			sim_obj.onStartTimeStep(interactions_filename,events_filename,i, len(self.eventFiles_list))
 			sim_obj.handleTimeStepForAllAgents()
 			sim_obj.endTimeStep()
 
@@ -62,6 +62,7 @@ class World():
 	#Averages multiple simulations and plots a single plot
 	def simulate_worlds(self):
 
+		# Population for each state and timestep
 		tdict={}
 		for state in self.model.individual_state_types:
 			tdict[state]=[0]*(self.config_obj.time_steps+1)
