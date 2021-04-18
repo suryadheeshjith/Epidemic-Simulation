@@ -3,6 +3,7 @@ import ReadFile
 import pickle
 import World
 import importlib.util
+import os.path as osp
 
 def module_from_file(module_name, file_path):
     spec = importlib.util.spec_from_file_location(module_name, file_path)
@@ -36,6 +37,16 @@ if __name__=="__main__":
     else:
     	locations_filename=path+config_obj.locations_filename
 
+    # Optional Module for File Generation
+    gen_files_obj = None
+    if(osp.exists(path+'UserGenerate.py')):
+        Generate_files = module_from_file("Generate_files", path+'UserGenerate.py')
+        gen_files_obj=Generate_files.UserGenerate(agents_filename, interactions_FilesList_filename, events_FilesList_filename, locations_filename)
+        agents_filename, interactions_FilesList_filename,\
+        events_FilesList_filename, locations_filename = gen_files_obj._generate_files()
+
+
+
     # Reading through a file (for interactions/events) that contain file names which contain interactions and event details for a time step
     if config_obj.interactions_files_list=='':
     	print('No Interaction files uploaded!')
@@ -58,11 +69,16 @@ if __name__=="__main__":
     model=Generate_model.generate_model()
 
     '''
-    # User Model and Policy
+    # User Model
     UserModel = module_from_file("Generate_model", path+'UserModel.py')
     model = UserModel.UserModel()
-    Generate_policy = module_from_file("Generate_policy", path+'Generate_policy.py')
-    policy_list, event_restriction_fn=Generate_policy.generate_policy()
+
+    # Optional Module for Policy
+    policy_list, event_restriction_fn = None, None
+    if(osp.exists(path+'Generate_policy.py')):
+        Generate_policy = module_from_file("Generate_policy", path+'Generate_policy.py')
+        policy_list, event_restriction_fn=Generate_policy.generate_policy()
+
 
     # Creation of World object
     world_obj=World.World(config_obj,model,policy_list,event_restriction_fn,agents_filename,interactions_files_list,locations_filename,events_files_list)
