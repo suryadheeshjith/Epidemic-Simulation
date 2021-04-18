@@ -6,5 +6,11 @@ Interaction Info Keys <>
 Interaction Files list filename <>
 Location Parameter Keys <Location Index>
 Location list filename <locations.txt>
-Event Parameter Keys <Location Index:Agents>
-Event Files list filename <event_files_list.txt>
+Event Parameter Keys <Location Index:Agents:Event Type:Prob of attending>
+Event Files list filename <event_files_list3.txt>
+
+
+Option 1 : Event Parameter Keys <Location Index:Agents:Event Type>
+Option 2 (With UserGenerate) : Event Parameter Keys <Location Index:Agents:Event Type>
+Option 3 (With Event Type and Prob of attending) : Event Parameter Keys <Location Index:Agents:Event Type:Prob of attending>
+                                                  Event Files list filename <event_files_list3.txt>
