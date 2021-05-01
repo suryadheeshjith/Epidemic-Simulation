@@ -1,11 +1,10 @@
 import random
 import copy
 from Policy import Agent_Policy
-from Agent import Agent
 from functools import partial
 
 
-class Results():
+class Result():
     def __init__(self,vaccine_name,agent,result,time_step,efficacy,decay_days):
         self.vaccine_name=vaccine_name
         self.agent=agent
@@ -30,10 +29,7 @@ class Vaccine_type():
         
         return result_obj  
 
-       
-     '''
-     results=[result_object1,...]
-     '''
+
     def inject_agent(self,agent):
 
         if (random.random()<self.efficacy):
@@ -54,10 +50,9 @@ class Vaccination_policy(Agent_Policy):
         self.statistics_total['Total Vaccination']=[]
         self.statistics_total['Total Successful']=[]
         self.statistics_total['Total Unsuccessful']=[]
-        for name in self.available_vaccines.keys():
-            self.statistics[name]={'Total Vaccination':[],'Total Successful':[],'Total Unsuccessful':[]}
+
             
-    def enact_policy(self,time_step,agents,locations):
+    def enact_policy(self,time_step,agents,locations,model=None):
         
         self.newday()
         self.set_protection(agents)
@@ -66,9 +61,11 @@ class Vaccination_policy(Agent_Policy):
         self.populate_results()
         self.restrict_agents(agents)
         self.get_stats()
-    '''
-    vaccines=[vaccine_obj1,vaccine_obj2...]
-    '''
+        if self.statistics_total['Total Vaccination'][-1]==0:
+            print(time_step)
+            assert 1==0
+        print(self.statistics,"\n")
+
     def newday(self):
 
         self.vaccines=[]
@@ -76,7 +73,7 @@ class Vaccination_policy(Agent_Policy):
         for name in self.available_vaccines.keys():
 
             for i in range(int(self.available_vaccines[name]['number'])):
-                name,cost,decay,efficay=self.available_vaccines[name]['parameters']
+                name,cost,decay,efficacy=self.available_vaccines[name]['parameters']
                 vaccine_obj=Vaccine_type(name,cost,decay,efficacy)
                 self.vaccines.append(vaccine_obj)
                 
@@ -92,16 +89,13 @@ class Vaccination_policy(Agent_Policy):
 
 
         for agent in agents_copy:
-            if (agent.get_agent_policy_state('Vaccination') is None): 
-                if self.parameter is None or agent.info[self.parameter] in value_list:
-                    current_vaccine= random.choose(self.vaccines)
+            if (agent.get_policy_state('Vaccination') is None and len(self.vaccines)): 
+                if parameter is None or agent.info[parameter] in value_list:
+                    current_vaccine= random.choice(self.vaccines)
                     result=current_vaccine.vaccinate(agent,time_step)
                     self.results.append(result)
                     self.vaccines.remove(current_vaccine)
 
-
-        ''' sinfo={'Agent Index': ....} Basically agents file
-        '''
         return None
         
     def set_protection(self,agents):
@@ -124,12 +118,10 @@ class Vaccination_policy(Agent_Policy):
             if (len(history)!=0):
                 if(history[-1].result=="Successful"):
                     if(history[-1].protection>=1):
-                        agent.restrict_receive_infection()  # sets can receive to False, NOT GETTING HIGHLIGHTED
+                        agent.restrict_recieve_infection()  # sets can receive to False, NOT GETTING HIGHLIGHTED
 
 
-       ''' history has list of result objects.
-       '''
-    def get_stats():
+    def get_stats(self):
         self.statistics_total['Total Vaccination'].append(0)
         self.statistics_total['Total Successful'].append(0)
         self.statistics_total['Total Unsuccessful'].append(0)
@@ -140,7 +132,7 @@ class Vaccination_policy(Agent_Policy):
         
         for result_obj in self.results:
             self.statistics_total['Total Vaccination'][-1]+=1
-            name=result_obj.name
+            name=result_obj.vaccine_name
             self.statistics[name]['Total Vaccination'][-1]+=1
             result=result_obj.result
             if result=="Successful":
@@ -151,14 +143,17 @@ class Vaccination_policy(Agent_Policy):
                 self.statistics_total['Total Unsuccessful'][-1]+=1
         
     def add_vaccination(self,name,cost,decay,efficacy,num):
+            
         if name in self.available_vaccines.keys():
-            if [name,cost,decay,efficacy]==self.available_vaccines[name]['parameters']
+            if [name,cost,decay,efficacy]==self.available_vaccines[name]['parameters']:
                 self.available_vaccines[name]['number']+=num
+                self.statistics[name]={'Total Vaccination':[],'Total Successful':[],'Total Unsuccessful':[]}
             else:
                 print("Error! Vaccine name with different parameter exists")
             
-        print("Vaccines have been successfully added")
+
         else:
             self.available_vaccines[name]={'parameters':[name,cost,decay,efficacy],'number':num}
+            self.statistics[name]={'Total Vaccination':[],'Total Successful':[],'Total Unsuccessful':[]}
            
   
