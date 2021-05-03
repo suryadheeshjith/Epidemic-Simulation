@@ -39,7 +39,7 @@ class Vaccine_type():
 
 
 class Vaccination_policy(Agent_Policy):
-    def __init__(self):
+    def __init__(self,agents_per_step_fn=None):
         super().__init__()
 
         self.policy_type='Vaccination'
@@ -50,32 +50,35 @@ class Vaccination_policy(Agent_Policy):
         self.statistics_total['Total Vaccination']=[]
         self.statistics_total['Total Successful']=[]
         self.statistics_total['Total Unsuccessful']=[]
+        print(agents_per_step_fn)
+        assert callable(agents_per_step_fn)
+        self.agents_per_step_fn = agents_per_step_fn
 
             
     def enact_policy(self,time_step,agents,locations,model=None):
         
-        self.newday()
+        self.newday(time_step)
         self.set_protection(agents)
         fn=self.full_random_vaccines()
         fn(agents,time_step)
         self.populate_results()
         self.restrict_agents(agents)
         self.get_stats()
-        if self.statistics_total['Total Vaccination'][-1]==0:
-            print(time_step)
-            assert 1==0
-        print(self.statistics,"\n")
 
-    def newday(self):
+
+    def newday(self,time_step):
 
         self.vaccines=[]
         self.results=[]
+        self.num_agents_to_vaccinate = self.agents_per_step_fn(time_step)
+
         for name in self.available_vaccines.keys():
 
             for i in range(int(self.available_vaccines[name]['number'])):
                 name,cost,decay,efficacy=self.available_vaccines[name]['parameters']
                 vaccine_obj=Vaccine_type(name,cost,decay,efficacy)
                 self.vaccines.append(vaccine_obj)
+ 
                 
     def full_random_vaccines(self,parameter=None, value_list=[]):
 
@@ -88,22 +91,31 @@ class Vaccination_policy(Agent_Policy):
         random.shuffle(agents_copy)
 
 
-        for agent in agents_copy:
-            if (agent.get_policy_state('Vaccination') is None and len(self.vaccines)): 
-                if parameter is None or agent.info[parameter] in value_list:
-                    current_vaccine= random.choice(self.vaccines)
-                    result=current_vaccine.vaccinate(agent,time_step)
-                    self.results.append(result)
-                    self.vaccines.remove(current_vaccine)
+        if (len(agents_copy)>=self.num_agents_to_vaccinate):
+            for agent in agents_copy:
+                if (agent.get_policy_state('Vaccination') is None and len(self.vaccines)): 
+                    if parameter is None or agent.info[parameter] in value_list:
+    
+                        current_vaccine= random.choice(self.vaccines)
+                        result=current_vaccine.vaccinate(agent,time_step)
+                        self.results.append(result)
+                        self.vaccines.remove(current_vaccine)
+
+        elif (len(agents_copy)<self.num_agents_to_vaccinate):
+
+            print("Error in choosing number of agents to vaccinate.Change the agent_per_step_fn ")
+            
 
         return None
         
     def set_protection(self,agents):
         for agent in agents:
-            history= self.get_agent_policy_history(agent) # dict of result objects
+            history= self.get_agent_policy_history(agent) 
+            # dict of result objects
             if len(history)==0:
                 continue
             else:
+
                 history[-1].protection-=1
                 
     def populate_results(self):
@@ -111,6 +123,7 @@ class Vaccination_policy(Agent_Policy):
             agent= result_obj.agent
             self.update_agent_policy_history(agent,result_obj)
             self.update_agent_policy_state(agent,result_obj.result)
+           
     
     def restrict_agents(self,agents):
         for agent in agents:
@@ -118,7 +131,7 @@ class Vaccination_policy(Agent_Policy):
             if (len(history)!=0):
                 if(history[-1].result=="Successful"):
                     if(history[-1].protection>=1):
-                        agent.restrict_recieve_infection()  # sets can receive to False, NOT GETTING HIGHLIGHTED
+                        agent.restrict_recieve_infection() 
 
 
     def get_stats(self):
