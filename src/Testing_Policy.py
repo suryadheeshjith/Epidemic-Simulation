@@ -172,6 +172,9 @@ class Test_Policy(Agent_Policy):
         self.release_results(time_step)
         self.end_time_step(time_step)
 
+    def reset(self):
+        self.statistics = {}
+        self.ready_queue = deque()
 
     def set_register_agent_testtube_func(self,fn):
         self.register_agent_testtube_func = fn
@@ -195,7 +198,6 @@ class Test_Policy(Agent_Policy):
             for i in range(num):
                 self.machine_list.append(Machine(machine_name, cost, false_positive_rate, false_negative_rate, turnaround_time, capacity))
                 self.total_cost+=cost
-
 
     def initialize_statistics_logs(self,time_step):
         self.statistics[time_step] = {'Total Tests':0, 'Total Positive Results':0,\
