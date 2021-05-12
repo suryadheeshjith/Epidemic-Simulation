@@ -161,7 +161,7 @@ class Test_Policy(Agent_Policy):
 
         assert callable(agents_per_step_fn)
         self.agents_per_step_fn = agents_per_step_fn
-<<<<<<< HEAD
+
 
     def enact_policy(self,time_step,agents,locations,model):
         self.new_time_step(time_step)
@@ -233,42 +233,6 @@ class Test_Policy(Agent_Policy):
     def full_random_agents(self, num_agents_per_testtube, num_testtubes_per_agent, attribute, value_list, agents, time_step):
         agents_copy = copy.copy(list(agents))
         random.shuffle(agents_copy)
-=======
-
-    def enact_policy(self,time_step,agents,locations,model):
-        self.new_time_step(time_step)
-        self.register_agent_testtube_func(agents, time_step)
-        self.add_partial_to_ready_queue()
-        self.register_testtubes_to_machines(time_step)
-        self.run_tests(model,time_step)
-        self.populate_results_in_machine(time_step)
-        self.release_results(time_step)
-        self.end_time_step(time_step)
-
-
-    def set_register_agent_testtube_func(self,fn):
-        self.register_agent_testtube_func = fn
-
-
-    def add_machine(self, machine_name, cost, false_positive_rate, false_negative_rate, turnaround_time, capacity, num=1):
-        if(machine_name in self.current_machines.keys()):
-            if([cost, false_positive_rate, false_negative_rate, turnaround_time, capacity]==self.current_machines[machine_name]['parameters']):
-                self.current_machines[machine_name]['number']+=num
-
-                for i in range(num):
-                    self.machine_list.append(Machine(machine_name, cost, false_positive_rate, false_negative_rate, turnaround_time, capacity))
-                    self.total_cost+=cost
-
-            else:
-                print("Error! Machine name with different parameters already exists")
-        else:
-            self.current_machines[machine_name] = {'parameters':[cost, false_positive_rate, false_negative_rate, turnaround_time, capacity],\
-                                                    'number':num}
-
-            for i in range(num):
-                self.machine_list.append(Machine(machine_name, cost, false_positive_rate, false_negative_rate, turnaround_time, capacity))
-                self.total_cost+=cost
->>>>>>> upstream/friendship_testing
 
         # Get agents for test
         agents_to_test = []
@@ -293,68 +257,6 @@ class Test_Policy(Agent_Policy):
 
                 for testtube in cur_list:
                     testtube.register_agent(agent)
-
-<<<<<<< HEAD
-=======
-    def initialize_statistics_logs(self,time_step):
-        self.statistics[time_step] = {'Total Tests':0, 'Total Positive Results':0,\
-                                         'Total Negative Results':0, 'Total Agents Tested':0}
-
-        for machine_name in self.current_machines.keys():
-            self.statistics[time_step][machine_name] = {'Number of Tests':0, 'Number of Positive Results':0,\
-                                                        'Number of Negative Results':0, 'Number of Agents Tested':0}
-
-    def initialize_process_logs(self,time_step):
-        self.statistics[time_step]["Process"] = {}
-        for machine_name in self.current_machines.keys():
-            self.statistics[time_step]["Process"][machine_name] = {}
-
-        for machine in self.machine_list:
-            machine_name = machine.get_machine_name()
-            self.statistics[time_step]["Process"][machine_name][machine.__str__()] = {'Running Status':'On Standby', 'Filled Status':'Empty'}
-
-        self.statistics[time_step]["Process"]["All Testubes filled"] = 'Default'
-        self.statistics[time_step]["Process"]["All Testubes in machine"] = 'Default'
-        self.statistics[time_step]["Process"]["All Machines running"] = 'Default'
-        self.statistics[time_step]["Process"]['Ready Queue Length'] = -1
-
-    def new_time_step(self,time_step):
-        self.initialize_statistics_logs(time_step)
-        self.initialize_process_logs(time_step)
-        self.cur_testtubes = []
-        self.num_agents_to_test = self.agents_per_step_fn(time_step)
-
-
-
-    def full_random_agents(self, num_agents_per_testtube, num_testtubes_per_agent, attribute, value_list, agents, time_step):
-        agents_copy = copy.copy(list(agents))
-        random.shuffle(agents_copy)
-
-        # Get agents for test
-        agents_to_test = []
-        for agent in agents_copy:
-
-            if(len(agents_to_test)==self.num_agents_to_test):
-                break
-
-            elif(attribute is None or agent.info[attribute] in value_list):
-                agents_to_test.append(agent)
-
-        # Create testtubes based on formula - int((ntpa x no. of agents + napt -1)/napt)
-        num_testtubes = int((num_testtubes_per_agent*self.num_agents_to_test + num_agents_per_testtube -1)/num_agents_per_testtube)
-        for _ in range(num_testtubes):
-            testtube = Testtube()
-            self.cur_testtubes.append(testtube)
-
-        # Assign agents to testtubes
-        for agent in agents_to_test:
-            if(len(self.cur_testtubes)>0):
-                cur_list = random.sample(self.cur_testtubes, min(num_testtubes_per_agent,len(self.cur_testtubes)))
-
-                for testtube in cur_list:
-                    testtube.register_agent(agent)
-
->>>>>>> upstream/friendship_testing
                     if(len(testtube.agents_test)>=num_agents_per_testtube):
                         self.ready_queue.append(testtube)
                         self.cur_testtubes.remove(testtube)
@@ -365,28 +267,6 @@ class Test_Policy(Agent_Policy):
         assert isinstance(value_list,list)
         return partial(self.full_random_agents, num_agents_per_testtube, num_testtubes_per_agent, attribute, value_list)
 
-<<<<<<< HEAD
-
-    def add_partial_to_ready_queue(self):
-        for testtube in self.cur_testtubes:
-            if(not testtube.is_empty()):
-                self.ready_queue.append(testtube)
-
-    def register_testtubes_to_machines(self,time_step):
-        for machine in self.machine_list:
-            while(self.ready_queue):
-                if(machine.is_running() or machine.is_full()):
-                    break
-
-                else:
-                    testtube = self.ready_queue.popleft()
-                    machine.register_testtube(testtube)
-
-    def run_tests(self,model,time_step):
-        for machine in self.machine_list:
-            if(not machine.is_empty() and not machine.is_running()):
-                machine.run_tests(model.infected_states,time_step)
-=======
     def full_friendship_testing(self, min_steps_since_last_test, attribute, value_list, agents, time_step):
         agents_copy = copy.copy(list(agents))
         random.shuffle(agents_copy)
@@ -412,40 +292,9 @@ class Test_Policy(Agent_Policy):
                             self.ready_queue.append(testtube)
                             cur_agents_to_test-=1
                             break
->>>>>>> upstream/friendship_testing
+
 
     def friendship_testing(self, min_steps_since_last_test=1, attribute=None, value_list=[]):
-
-<<<<<<< HEAD
-    def populate_results_in_machine(self, time_step):
-        for machine in self.machine_list:
-            if(machine.is_running()):
-                machine.populate_machine_results(time_step)
-
-    def release_results_to_agents(self,results):
-        for result_obj in results:
-            for agent in result_obj.agents:
-                self.update_agent_policy_history(agent,result_obj)
-
-    def release_results_to_policy(self,results,time_step):
-        for result_obj in results:
-            machine_name = result_obj.get_machine_name()
-            self.statistics[time_step][machine_name]['Number of Tests'] += 1
-            self.statistics[time_step]['Total Tests'] +=1
-
-            if(result_obj.get_result()=='Positive'):
-                self.statistics[time_step][machine_name]['Number of Positive Results'] +=1
-                self.statistics[time_step]['Total Positive Results'] += 1
-
-            elif(result_obj.get_result()=='Negative'):
-                self.statistics[time_step][machine_name]['Number of Negative Results'] +=1
-                self.statistics[time_step]['Total Negative Results'] += 1
-
-            self.statistics[time_step][machine_name]['Number of Agents Tested'] += result_obj.get_num_agents()
-            self.statistics[time_step]['Total Agents Tested'] += result_obj.get_num_agents()
-
-
-=======
         assert isinstance(value_list,list)
         return partial(self.full_friendship_testing, min_steps_since_last_test, attribute, value_list)
 
@@ -499,14 +348,12 @@ class Test_Policy(Agent_Policy):
             self.statistics[time_step]['Total Agents Tested'] += result_obj.get_num_agents()
 
 
->>>>>>> upstream/friendship_testing
     def release_results(self,time_step):
         results = []
         for machine in self.machine_list:
             if(not machine.has_empty_results()):
                 results += machine.get_results()
                 machine.reset_machine()
-<<<<<<< HEAD
 
         self.release_results_to_agents(results)
         self.release_results_to_policy(results, time_step)
@@ -552,53 +399,6 @@ class Test_Policy(Agent_Policy):
         self.statistics[time_step]["Process"]['All Testubes in machine'] = all_testtubes_in_machines
         self.statistics[time_step]["Process"]['Ready Queue Length'] = len(self.ready_queue)
 
-=======
-
-        self.release_results_to_agents(results)
-        self.release_results_to_policy(results, time_step)
-
-
-
-    def update_process_logs(self, time_step):
-        for machine in self.machine_list:
-            machine_name = machine.get_machine_name()
-
-            if(machine.is_running()):
-                self.statistics[time_step]["Process"][machine_name][machine.__str__()]['Running Status'] = 'Running'
-            else:
-                self.statistics[time_step]["Process"][machine_name][machine.__str__()]['Running Status'] = 'On Standby'
-
-            if(machine.is_empty()):
-                self.statistics[time_step]["Process"][machine_name][machine.__str__()]['Filled Status'] = 'Empty'
-            elif(machine.is_full()):
-                self.statistics[time_step]["Process"][machine_name][machine.__str__()]['Filled Status'] = 'Completely Filled'
-            else:
-                self.statistics[time_step]["Process"][machine_name][machine.__str__()]['Filled Status'] = 'Partly filled'
-
-        all_testtubes_filled = True
-        all_testtubes_in_machines = True
-        all_machines_running = True
-
-
-        for testtube in self.cur_testtubes:
-            if(testtube.is_empty()):
-                all_testtubes_filled = False
-                break
-
-        if(self.ready_queue):
-            all_testtubes_in_machines = False
-
-        for machine in self.machine_list:
-            if(not machine.is_running()):
-                all_machines_running = False
-                break
-
-        self.statistics[time_step]["Process"]['All Testubes filled'] = all_testtubes_filled
-        self.statistics[time_step]["Process"]['All Machines running'] = all_machines_running
-        self.statistics[time_step]["Process"]['All Testubes in machine'] = all_testtubes_in_machines
-        self.statistics[time_step]["Process"]['Ready Queue Length'] = len(self.ready_queue)
-
->>>>>>> upstream/friendship_testing
     def end_time_step(self, time_step):
         self.update_process_logs(time_step)
         with open("testing_stats.json", "w") as outfile:
