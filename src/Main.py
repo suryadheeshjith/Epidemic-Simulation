@@ -27,9 +27,9 @@ def get_file_paths(example_path,config_obj):
     interactions_FilesList_filename=osp.join(example_path,config_obj.interactions_files_list)
     events_FilesList_filename=osp.join(example_path,config_obj.events_files_list)
     if config_obj.locations_filename=="":
-    	locations_filename=None
+        locations_filename=None
     else:
-    	locations_filename=osp.join(example_path,config_obj.locations_filename)
+        locations_filename=osp.join(example_path,config_obj.locations_filename)
 
     return agents_filename, interactions_FilesList_filename, events_FilesList_filename, locations_filename
 
@@ -41,21 +41,21 @@ def get_file_names_list(example_path,interactions_FilesList_filename,events_File
     events_files_list=None
 
     if config_obj.interactions_files_list=='':
-    	print('No Interaction files uploaded!')
+        print('No Interaction files uploaded!')
     else:
-    	interactionFiles_obj=ReadFile.ReadFilesList(interactions_FilesList_filename)
-    	interactions_files_list=list(map(lambda x : osp.join(example_path,x) ,interactionFiles_obj.file_list))
-    	if interactions_files_list==[]:
-    		print('No Interactions inputted')
+        interactionFiles_obj=ReadFile.ReadFilesList(interactions_FilesList_filename)
+        interactions_files_list=list(map(lambda x : osp.join(example_path,x) ,interactionFiles_obj.file_list))
+        if interactions_files_list==[]:
+            print('No Interactions inputted')
 
 
     if config_obj.events_files_list=='':
-    	print('No Event files uploaded!')
+        print('No Event files uploaded!')
     else:
-    	eventFiles_obj=ReadFile.ReadFilesList(events_FilesList_filename)
-    	events_files_list=list(map(lambda x : osp.join(example_path,x) ,eventFiles_obj.file_list))
-    	if events_files_list==[]:
-    		print('No Events inputted')
+        eventFiles_obj=ReadFile.ReadFilesList(events_FilesList_filename)
+        events_files_list=list(map(lambda x : osp.join(example_path,x) ,eventFiles_obj.file_list))
+        if events_files_list==[]:
+            print('No Events inputted')
 
     return interactions_files_list, events_files_list
 
