@@ -2,6 +2,7 @@ import random
 import copy
 import numpy as np
 import ReadFile
+from Testing_Policy import Test_Policy
 
 class Simulate():
     def __init__(self,config_obj,model,policy_list,event_restriction_fn,agents_obj,locations_obj):
@@ -80,11 +81,18 @@ class Simulate():
         #Finding next_state
         agent.set_next_state(self.model.find_next_state(agent,self.agents_obj.agents,self.current_time_step))
 
+    def test_cost(self):
+        cost =0
+        for policy in self.policy_list:
+            if(isinstance(policy,Test_Policy)):
+                cost+= policy.get_test_costs()
+        return cost
+
     def endTimeStep(self):
         self.store_state()
 
     def endSimulation(self):
-        return self.state_history
+        return self.state_history, self.test_cost()
 
     def store_state(self):
         for state in self.state_history.keys():

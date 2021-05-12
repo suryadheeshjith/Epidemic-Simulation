@@ -20,6 +20,8 @@ class Agent():
         self.policy_dict={}    #Store all policy related status of agent
         self.initialize_policy_dict()
 
+        self.quarantine_list = [] # Cost
+
     def initialize_policy_dict(self):
         for policy_type in ['Restrict','Testing','Vaccination']:
             temp={'History':[], 'State':None}

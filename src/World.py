@@ -20,6 +20,12 @@ class World():
         self.interactionFiles_list=interactionFiles_list
         self.eventFiles_list=eventFiles_list
 
+        # Costs
+        self.total_quarantined_days = 0
+        self.wrongly_quarantined_days = 0
+        self.total_infection = 0
+        self.total_machine_cost = 0
+
     def one_world(self):
 
         time_steps = self.config_obj.time_steps
@@ -47,7 +53,24 @@ class World():
             sim_obj.handleTimeStepForAllAgents()
             sim_obj.endTimeStep()
 
-        end_state=sim_obj.endSimulation()
+        end_state, machine_cost=sim_obj.endSimulation()
+        total_quarantined_days = 0
+        wrongly_quarantined_days = 0
+        for agent in agents_obj.agents.values():
+            for truth in agent.quarantine_list:
+                if(truth=="Right"):
+                    total_quarantined_days+=1
+                elif(truth=="Wrong"):
+                    total_quarantined_days+=1
+                    wrongly_quarantined_days+=1
+
+
+        self.total_quarantined_days+=total_quarantined_days
+        self.wrongly_quarantined_days+=wrongly_quarantined_days
+
+        self.total_infection+=len(agents_obj.agents)-end_state["Susceptible"][-1]
+        self.total_machine_cost+=machine_cost
+
         return end_state, agents_obj, locations_obj
 
     #Average number time series
@@ -73,7 +96,10 @@ class World():
                     tdict[state][j]+=sdict[state][j]
 
         tdict=self.average(tdict,self.config_obj.worlds)
-
+        print("Random Total Infections : ",self.total_infection/self.config_obj.worlds)
+        print("Total quarantined days : ",self.total_quarantined_days/self.config_obj.worlds)
+        print("Wrongly quarantined days : ",self.wrongly_quarantined_days/self.config_obj.worlds)
+        print("Total Testing Cost : ",self.total_machine_cost/self.config_obj.worlds)
         if(plot):
             for state in tdict.keys():
                 plt.plot(tdict[state])
