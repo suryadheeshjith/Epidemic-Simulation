@@ -4,6 +4,9 @@ import pickle
 import World
 import importlib.util
 import os.path as osp
+import policy_generator as pg
+import matplotlib.pyplot as plt
+import numpy as np
 
 def module_from_file(module_name, file_path):
     spec = importlib.util.spec_from_file_location(module_name, file_path)
@@ -81,10 +84,81 @@ if __name__=="__main__":
     events_FilesList_filename, locations_filename = get_file_paths(example_path,config_obj)
     interactions_files_list, events_files_list = get_file_names_list(example_path,interactions_FilesList_filename,events_FilesList_filename,config_obj)
 
-    # User Model and Policy
+    # User Model
     model = get_model(example_path)
-    policy_list, event_restriction_fn=get_policy(example_path)
+    # policy_list, event_restriction_fn=get_policy(example_path)
 
-    # Creation of World object
-    world_obj=World.World(config_obj,model,policy_list,event_restriction_fn,agents_filename,interactions_files_list,locations_filename,events_files_list)
-    world_obj.simulate_worlds()
+
+    ##########################################################################################
+
+    # OPTION - 1
+    # test_mode = "Same number of tests" #"Same number of tests" "Test cost vs Inf vs Q"
+    # num_tests = 60
+    # min_agents_per_test = 1
+    # min_tests_per_agent = 1
+    # max_agents_per_test = 5
+    # max_tests_per_agent = 5
+
+    # OPTION - 2
+    test_mode="FP vs FN"
+    num_tests = 60
+    fp_range = np.arange(0.0,0.5,0.1)
+    fn_range = np.arange(0.0,0.5,0.1)
+
+
+    total_inf_plt = []
+    total_q_plt = []
+    total_wq_plt = []
+    total_test_plt = []
+
+    if(test_mode=="Same number of tests" or test_mode=="Test cost vs Inf vs Q"):
+        for i in range(min_agents_per_test,max_agents_per_test):
+            for j in range(min_tests_per_agent, max_tests_per_agent):
+                if(test_mode=="Same number of tests"):
+                    policy_list, event_restriction_fn =  pg.generate_group_testing_tests_policy(num_tests, i, j)
+                elif(test_mode=="Test cost vs Inf vs Q"):
+                    pass
+                    # policy_list, event_restriction_fn =  pg.generate_policy(num_tests, i, j)
+                world_obj=World.World(config_obj,model,policy_list,event_restriction_fn,agents_filename,interactions_files_list,locations_filename,events_files_list)
+                tdict, total_infection, total_quarantined_days, wrongly_quarantined_days, total_test_cost = world_obj.simulate_worlds(plot=False)
+                total_inf_plt.append(total_infection)
+                total_q_plt.append(total_quarantined_days)
+                total_wq_plt.append(wrongly_quarantined_days)
+                total_test_plt.append(total_test_cost)
+
+    elif(test_mode=="FP vs FN"):
+        for i in fp_range:
+            for j in fn_range:
+                policy_list, event_restriction_fn =  pg.generate_fp_fn_policy(num_tests, i, j)
+
+                world_obj=World.World(config_obj,model,policy_list,event_restriction_fn,agents_filename,interactions_files_list,locations_filename,events_files_list)
+                tdict, total_infection, total_quarantined_days, wrongly_quarantined_days, total_test_cost = world_obj.simulate_worlds(plot=False)
+                total_inf_plt.append(total_infection)
+                total_q_plt.append(total_quarantined_days)
+                total_wq_plt.append(wrongly_quarantined_days)
+                total_test_plt.append(total_test_cost)
+
+
+    # Plots
+    if(test_mode=="Same number of tests"):
+        wq_q_plt = [wq/q for wq,q in zip(total_wq_plt,total_q_plt)]
+        plt.xlim(0, 1000)
+        plt.ylim(0.0, 1.0)
+        plt.scatter(total_inf_plt,wq_q_plt)
+        plt.title("Total Infection vs Wrongly/Total Quarantined days")
+
+    elif(test_mode=="Test cost vs Inf vs Q"):
+        plot1 = plt.figure(1)
+        plt.scatter(total_test_plt,total_inf_plt)
+        plt.title("Total Test Cost vs Total Infection")
+
+        plot2 = plt.figure(2)
+        plt.scatter(total_test_plt,total_q_plt)
+        plt.title("Total Test Cost vs Total Quarantined days")
+
+    elif(test_mode=="FP vs FN"):
+        plt.scatter(total_inf_plt,total_test_plt)
+        plt.title("Total Infection vs Total Test Cost")
+
+    plt.show()
+    ###############################################################################################

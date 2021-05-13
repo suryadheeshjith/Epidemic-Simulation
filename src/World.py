@@ -96,10 +96,14 @@ class World():
                     tdict[state][j]+=sdict[state][j]
 
         tdict=self.average(tdict,self.config_obj.worlds)
-        print("Random Total Infections : ",self.total_infection/self.config_obj.worlds)
-        print("Total quarantined days : ",self.total_quarantined_days/self.config_obj.worlds)
-        print("Wrongly quarantined days : ",self.wrongly_quarantined_days/self.config_obj.worlds)
-        print("Total Testing Cost : ",self.total_machine_cost/self.config_obj.worlds)
+        self.total_infection/=self.config_obj.worlds
+        self.total_quarantined_days/=self.config_obj.worlds
+        self.wrongly_quarantined_days/=self.config_obj.worlds
+        self.total_machine_cost/=self.config_obj.worlds
+        print("Random Total Infections : ",self.total_infection)
+        print("Total quarantined days : ",self.total_quarantined_days)
+        print("Wrongly quarantined days : ",self.wrongly_quarantined_days)
+        print("Total Testing Cost : ",self.total_machine_cost)
         if(plot):
             for state in tdict.keys():
                 plt.plot(tdict[state])
@@ -108,4 +112,4 @@ class World():
             plt.legend(list(tdict.keys()),loc='upper right', shadow=True)
             plt.show()
         else:
-            return tdict
+            return tdict, self.total_infection, self.total_quarantined_days, self.wrongly_quarantined_days, self.total_machine_cost
