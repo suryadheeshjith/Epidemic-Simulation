@@ -92,18 +92,18 @@ if __name__=="__main__":
     ##########################################################################################
 
     # OPTION - 1
-    # test_mode = "Same number of tests" #"Same number of tests" "Test cost vs Inf vs Q"
-    # num_tests = 60
-    # min_agents_per_test = 1
-    # min_tests_per_agent = 1
-    # max_agents_per_test = 5
-    # max_tests_per_agent = 5
+    test_mode = "Same number of tests" #"Same number of tests" "Test cost vs Inf vs Q"
+    num_tests = 60
+    min_agents_per_test = 1
+    min_tests_per_agent = 1
+    max_agents_per_test = 5
+    max_tests_per_agent = 5
 
     # OPTION - 2
-    test_mode="FP vs FN"
-    num_tests = 60
-    fp_range = np.arange(0.0,0.5,0.1)
-    fn_range = np.arange(0.0,0.5,0.1)
+    # test_mode="FP vs FN"
+    # num_tests = 60
+    # fp_range = np.arange(0.0,0.5,0.1)
+    # fn_range = np.arange(0.0,0.5,0.1)
 
 
     total_inf_plt = []

@@ -21,6 +21,9 @@ class Agent():
         self.initialize_policy_dict()
 
         self.quarantine_list = [] # Cost
+        self.tested_positive = 0
+        self.states = []
+        self.quarantined = []
 
     def initialize_policy_dict(self):
         for policy_type in ['Restrict','Testing','Vaccination']:

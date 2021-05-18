@@ -39,17 +39,26 @@ class agent_policy_based_lockdown(Agent_Policy):
 
         for agent in agents:
             history = agent.get_policy_history(self.policy_to_consider)
+            flag = 0
             if(len(history)):
                 last_time_step = history[-1].time_step
                 if(time_step - last_time_step <=self.time_period):
                     result = self.get_accumulated_result(history,last_time_step)
                     if(result in self.value_list):
+                        agent.tested_positive+=1
                         if self.do_lockdown_fn(time_step):
+                            flag = 1
                             agent.restrict_recieve_infection()
                             agent.restrict_contribute_infection()
                             self.append_quarantine_list(agent,last_time_step,time_step,True)
                         else:
                             self.append_quarantine_list(agent,last_time_step,time_step,False)
+
+            if(flag==0):
+                agent.quarantined.append("No")
+            elif(flag==1):
+                agent.quarantined.append("Yes")
+            agent.states.append(agent.state)
 
     def get_accumulated_result(self,history,last_time_step):
 

@@ -14,7 +14,7 @@ def generate_group_testing_tests_policy(num_tests, num_agents_per_test, num_test
     Pool_Testing.set_register_agent_testtube_func(Pool_Testing.random_agents(num_agents_per_test,num_tests_per_agent))
     policy_list.append(Pool_Testing)
 
-    ATP = Lockdown_Policy.agent_policy_based_lockdown("Testing",["Positive"],lambda x:random.random()<0.95,10)
+    ATP = Lockdown_Policy.agent_policy_based_lockdown("Testing",["Positive"],lambda x:True,10)
     policy_list.append(ATP)
 
     def event_restriction_fn(agent,event_info,current_time_step):
@@ -32,7 +32,7 @@ def generate_fp_fn_policy(num_tests, fp, fn):
     Pool_Testing.set_register_agent_testtube_func(Pool_Testing.random_agents(1,1))
     policy_list.append(Pool_Testing)
 
-    ATP = Lockdown_Policy.agent_policy_based_lockdown("Testing",["Positive"],lambda x:random.random()<0.95,10)
+    ATP = Lockdown_Policy.agent_policy_based_lockdown("Testing",["Positive"],lambda x:True,10)
     policy_list.append(ATP)
 
     def event_restriction_fn(agent,event_info,current_time_step):

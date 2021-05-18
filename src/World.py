@@ -9,6 +9,33 @@ import Simulate
 import math
 import ReadFile
 
+def get_accumulated_result(agent,history):
+
+    total_tests = len(history)
+    total_false_positive = 0
+
+    indx = len(history)-1
+    last_time_step = history[indx].time_step
+
+    while(indx>=0):
+        flag=0
+        while(indx>=0 and history[indx].time_step==last_time_step):
+            if(history[indx].result == "Negative"):
+                flag=1
+                indx-=1
+                break
+
+            indx-=1
+
+        if(flag==0 and agent.states[last_time_step]!="Infected"):
+            total_false_positive+=1
+        try:
+            last_time_step = history[indx].time_step
+        except:
+            break
+
+    return total_tests, total_false_positive
+
 class World():
     def __init__(self,config_obj,model,policy_list,event_restriction_fn,agents_filename,interactionFiles_list,locations_filename,eventFiles_list):
         self.config_obj=config_obj
@@ -25,6 +52,10 @@ class World():
         self.wrongly_quarantined_days = 0
         self.total_infection = 0
         self.total_machine_cost = 0
+        self.total_positives = 0
+        self.total_agents_tests = 0
+        self.total_false_positives = 0
+
 
     def one_world(self):
 
@@ -56,6 +87,11 @@ class World():
         end_state, machine_cost=sim_obj.endSimulation()
         total_quarantined_days = 0
         wrongly_quarantined_days = 0
+        total_positives = 0
+        total_agents_tests = 0
+        total_false_positives = 0
+
+
         for agent in agents_obj.agents.values():
             for truth in agent.quarantine_list:
                 if(truth=="Right"):
@@ -65,11 +101,24 @@ class World():
                     wrongly_quarantined_days+=1
 
 
+            total_positives+=agent.tested_positive
+
+            history = agent.get_policy_history("Testing")
+            if(len(history)):
+                t_t, t_f_p = get_accumulated_result(agent,history)
+                total_agents_tests+=t_t
+                total_false_positives+=t_f_p
+
+
         self.total_quarantined_days+=total_quarantined_days
         self.wrongly_quarantined_days+=wrongly_quarantined_days
 
         self.total_infection+=len(agents_obj.agents)-end_state["Susceptible"][-1]
         self.total_machine_cost+=machine_cost
+        self.total_positives+=total_positives
+
+        self.total_agents_tests+=total_agents_tests
+        self.total_false_positives+=total_false_positives
 
         return end_state, agents_obj, locations_obj
 
@@ -100,10 +149,17 @@ class World():
         self.total_quarantined_days/=self.config_obj.worlds
         self.wrongly_quarantined_days/=self.config_obj.worlds
         self.total_machine_cost/=self.config_obj.worlds
-        print("Random Total Infections : ",self.total_infection)
+        self.total_agents_tests/=self.config_obj.worlds
+        self.total_positives/=self.config_obj.worlds
+        self.total_false_positives/=self.config_obj.worlds
+        print("Total Infections : ",self.total_infection)
         print("Total quarantined days : ",self.total_quarantined_days)
         print("Wrongly quarantined days : ",self.wrongly_quarantined_days)
         print("Total Testing Cost : ",self.total_machine_cost)
+        print("Total Agents Tested : ",self.total_agents_tests)
+        print("Total Positives : ",self.total_positives)
+        print("Total False Positives : ",self.total_false_positives)
+
         if(plot):
             for state in tdict.keys():
                 plt.plot(tdict[state])
