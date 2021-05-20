@@ -41,16 +41,16 @@ class ReadConfiguration():
             print("Interaction definition does not contain parameter \'Interacting Agent Index\'")
 
 
-        if 'Location Index' not in self.location_info_keys.split(':'):
-            print('Location file does not contain parameter \'Location Index\'')
+        #if 'Location Index' not in self.location_info_keys.split(':'):
+        #    print('Location file does not contain parameter \'Location Index\'')
 
 
-        if 'Location Index' not in self.event_info_keys.split(':'):
-            print('Event definition does not contain parameter \'Location Index\'')
+        #if 'Location Index' not in self.event_info_keys.split(':'):
+        #    print('Event definition does not contain parameter \'Location Index\'')
 
 
-        if 'Agents' not in self.event_info_keys.split(':'):
-            print('Event definition does not contain parameter \'Agents\'')
+        #if 'Agents' not in self.event_info_keys.split(':'):
+        #    print('Event definition does not contain parameter \'Agents\'')
 
 
     def get_value_config(self, line):

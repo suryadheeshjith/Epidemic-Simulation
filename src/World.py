@@ -152,13 +152,13 @@ class World():
         self.total_agents_tests/=self.config_obj.worlds
         self.total_positives/=self.config_obj.worlds
         self.total_false_positives/=self.config_obj.worlds
-        print("Total Infections : ",self.total_infection)
-        print("Total quarantined days : ",self.total_quarantined_days)
-        print("Wrongly quarantined days : ",self.wrongly_quarantined_days)
-        print("Total Testing Cost : ",self.total_machine_cost)
-        print("Total Agents Tested : ",self.total_agents_tests)
-        print("Total Positives : ",self.total_positives)
-        print("Total False Positives : ",self.total_false_positives)
+        #print("Total Infections : ",self.total_infection)
+        #print("Total quarantined days : ",self.total_quarantined_days)
+        #print("Wrongly quarantined days : ",self.wrongly_quarantined_days)
+        #print("Total Testing Cost : ",self.total_machine_cost)
+        #print("Total Agents Tested : ",self.total_agents_tests)
+        #print("Total Positives : ",self.total_positives)
+        #print("Total False Positives : ",self.total_false_positives)
 
         if(plot):
             for state in tdict.keys():
