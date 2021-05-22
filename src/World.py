@@ -11,7 +11,6 @@ import ReadFile
 
 def get_accumulated_result(agent,history):
 
-    total_tests = len(history)
     total_false_positive = 0
 
     indx = len(history)-1
@@ -34,7 +33,7 @@ def get_accumulated_result(agent,history):
         except:
             break
 
-    return total_tests, total_false_positive
+    return total_false_positive
 
 class World():
     def __init__(self,config_obj,model,policy_list,event_restriction_fn,agents_filename,interactionFiles_list,locations_filename,eventFiles_list):
@@ -88,7 +87,6 @@ class World():
         total_quarantined_days = 0
         wrongly_quarantined_days = 0
         total_positives = 0
-        total_agents_tests = 0
         total_false_positives = 0
 
 
@@ -105,8 +103,7 @@ class World():
 
             history = agent.get_policy_history("Testing")
             if(len(history)):
-                t_t, t_f_p = get_accumulated_result(agent,history)
-                total_agents_tests+=t_t
+                t_f_p = get_accumulated_result(agent,history)
                 total_false_positives+=t_f_p
 
 
@@ -117,7 +114,6 @@ class World():
         self.total_machine_cost+=machine_cost
         self.total_positives+=total_positives
 
-        self.total_agents_tests+=total_agents_tests
         self.total_false_positives+=total_false_positives
 
         return end_state, agents_obj, locations_obj
@@ -149,14 +145,12 @@ class World():
         self.total_quarantined_days/=self.config_obj.worlds
         self.wrongly_quarantined_days/=self.config_obj.worlds
         self.total_machine_cost/=self.config_obj.worlds
-        self.total_agents_tests/=self.config_obj.worlds
         self.total_positives/=self.config_obj.worlds
         self.total_false_positives/=self.config_obj.worlds
         #print("Total Infections : ",self.total_infection)
         #print("Total quarantined days : ",self.total_quarantined_days)
         #print("Wrongly quarantined days : ",self.wrongly_quarantined_days)
         #print("Total Testing Cost : ",self.total_machine_cost)
-        #print("Total Agents Tested : ",self.total_agents_tests)
         #print("Total Positives : ",self.total_positives)
         #print("Total False Positives : ",self.total_false_positives)
 
@@ -172,4 +166,4 @@ class World():
                 return tdict, self.total_infection, self.total_quarantined_days, self.wrongly_quarantined_days, self.total_machine_cost
             else:
                 return tdict, self.total_infection, self.total_quarantined_days, self.wrongly_quarantined_days, self.total_machine_cost,\
-                            self.total_agents_tests, self.total_positives, self.total_false_positives
+                            self.total_positives, self.total_false_positives

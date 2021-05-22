@@ -99,8 +99,8 @@ if __name__=="__main__":
         policy_list, event_restriction_fn =  pg.generate_group_testing_tests_policy(num_tests, i, j)
         world_obj=World.World(config_obj,model,policy_list,event_restriction_fn,agents_filename,interactions_files_list,locations_filename,events_files_list)
         tdict, total_infection, total_quarantined_days, wrongly_quarantined_days, total_test_cost,\
-        total_agents, total_positives, total_false_positives = world_obj.simulate_worlds(plot=False, extra=True)
-        fp.write("({0},{1})\t\t\t{2}\t\t\t\t\t{3}\t\t\t\t\t\t{4}\t\t\t\t\t\t{5}\n".format(i,j,np.ceil(total_agents/config_obj.time_steps),total_infection,total_positives,total_false_positives))
+        total_positives, total_false_positives = world_obj.simulate_worlds(plot=False, extra=True)
+        fp.write("({0},{1})\t\t\t{2:.2f}\t\t\t\t\t{3}\t\t\t\t\t\t{4}\t\t\t\t\t\t{5}\n".format(i,j,num_tests*i/j,total_infection,total_positives,total_false_positives))
 
     fp.close()
     ###############################################################################################
