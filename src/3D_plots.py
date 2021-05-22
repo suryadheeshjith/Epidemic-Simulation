@@ -97,19 +97,24 @@ if __name__=="__main__":
 
     ntpa_max=6
     napt_max=6
-    data_list={'Infected':np.zeros((napt_max,ntpa_max)),'False Positives':np.zeros((napt_max,ntpa_max))}
+    X=np.arange(1, napt_max+1, 1)
+    Y=np.arange(1, ntpa_max+1, 1)
+    X,Y = np.meshgrid(X,Y)
+    print(X)
+    print(Y)
+
+
+    data_list={'Infected':np.zeros((ntpa_max,napt_max)),'False Positives':np.zeros((ntpa_max,napt_max))}
 
     for i in range(napt_max):
         for j in range(ntpa_max):
             policy_list, event_restriction_fn =  pg.generate_group_testing_tests_policy(num_tests, i+1, j+1)
             world_obj=World.World(config_obj,model,policy_list,event_restriction_fn,agents_filename,interactions_files_list,locations_filename,events_files_list)
             tdict, total_infection, total_quarantined_days, wrongly_quarantined_days, total_test_cost = world_obj.simulate_worlds(plot=False)
-            data_list['Infected'][i][j]=total_infection
-            data_list['False Positives'][i][j]=world_obj.total_false_positives
+            data_list['Infected'][j][i]=total_infection
+            data_list['False Positives'][j][i]=world_obj.total_false_positives
 
-    X=np.arange(1, napt_max+1, 1)
-    Y=np.arange(1, ntpa_max+1, 1)
-    X,Y = np.meshgrid(X, Y)
+    
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
     surf = ax.plot_surface(X, Y, np.array(data_list['False Positives']), cmap=cm.coolwarm,linewidth=0, antialiased=False)
     # Customize the z axis.
