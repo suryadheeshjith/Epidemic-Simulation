@@ -73,7 +73,8 @@ def get_policy(example_path):
     return policy_list, event_restriction_fn
 
 if __name__=="__main__":
-
+    # import tracemalloc
+    # tracemalloc.start()
     example_path = get_example_path()
     config_filename = get_config_path(example_path)
 
@@ -106,3 +107,7 @@ if __name__=="__main__":
     # import os, psutil
     # process = psutil.Process(os.getpid())
     # print(process.memory_info().rss)
+
+    # current, peak = tracemalloc.get_traced_memory()
+    # print(f"Current memory usage is {current / 10**6}MB; Peak was {peak / 10**6}MB")
+    # tracemalloc.stop()
