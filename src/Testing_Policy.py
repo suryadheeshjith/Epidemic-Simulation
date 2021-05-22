@@ -309,7 +309,7 @@ class Test_Policy(Agent_Policy):
     #################
     # 2D Infection Plots
     def num_agents_func(self, num_tests, num_agents_per_test, num_tests_per_agent):
-        return int((num_tests*num_tests_per_agent + num_agents_per_test -1)/num_agents_per_test)
+        return int((num_tests*num_agents_per_test)/num_agents_per_test)
 
     def full_random_agents_with_dynamic(self, num_tests, num_agents_per_testtube, num_testtubes_per_agent, dynamic, attribute, value_list, agents, time_step):
 
