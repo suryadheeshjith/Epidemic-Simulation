@@ -306,6 +306,74 @@ class Test_Policy(Agent_Policy):
         assert isinstance(value_list,list)
         return partial(self.full_friendship_testing, min_steps_since_last_test, attribute, value_list)
 
+    #################
+    # 2D Infection Plots
+    def num_agents_func(self, num_tests, num_agents_per_test, num_tests_per_agent):
+        return int((num_tests*num_tests_per_agent + num_agents_per_test -1)/num_agents_per_test)
+
+    def full_random_agents_with_dynamic(self, num_tests, num_agents_per_testtube, num_testtubes_per_agent, dynamic, attribute, value_list, agents, time_step):
+
+        agents_copy = copy.copy(list(agents))
+        random.shuffle(agents_copy)
+        if(dynamic):
+            if(time_step>0):
+                total_tests = self.statistics[time_step-1]['Total Tests']
+                total_positive_results = self.statistics[time_step-1]['Total Positive Results']
+                ratio = total_positive_results/total_tests
+                # print(ratio)
+                if(ratio>=0.35):
+                    num_agents_per_testtube = 1
+                    num_testtubes_per_agent = 1
+                elif(ratio<0.35 and ratio>= 0.2):
+                    num_agents_per_testtube = 3
+                    num_testtubes_per_agent = 2
+                elif(ratio<0.2 and ratio>= 0.1):
+                    num_agents_per_testtube = 4
+                    num_testtubes_per_agent = 2
+                elif(ratio<0.1):
+                    num_agents_per_testtube = 5
+                    num_testtubes_per_agent = 2
+            else:
+                num_agents_per_testtube = 3
+                num_testtubes_per_agent = 2
+
+
+        assert num_agents_per_testtube and num_testtubes_per_agent
+        # print(dynamic, num_tests, num_agents_per_testtube, num_testtubes_per_agent)
+        # Get agents for test
+        agents_to_test = []
+        for agent in agents_copy:
+
+            if(len(agents_to_test)==self.num_agents_func(num_tests, num_agents_per_testtube, num_testtubes_per_agent)):
+                break
+
+            elif(attribute is None or agent.info[attribute] in value_list):
+                agents_to_test.append(agent)
+
+        # Create testtubes = constant number of tests
+        num_testtubes = num_tests
+        for _ in range(num_testtubes):
+            testtube = Testtube()
+            self.cur_testtubes.append(testtube)
+
+        # Assign agents to testtubes
+        for agent in agents_to_test:
+            if(len(self.cur_testtubes)>0):
+                cur_list = random.sample(self.cur_testtubes, min(num_testtubes_per_agent,len(self.cur_testtubes)))
+
+                for testtube in cur_list:
+                    testtube.register_agent(agent)
+                    if(len(testtube.agents_test)>=num_agents_per_testtube):
+                        self.ready_queue.append(testtube)
+                        self.cur_testtubes.remove(testtube)
+            else:
+                break
+
+    def random_agents_with_dynamic(self, num_tests, num_agents_per_testtube=1, num_testtubes_per_agent=1, dynamic=False, attribute=None, value_list=[]):
+        assert isinstance(value_list,list)
+        return partial(self.full_random_agents_with_dynamic, num_tests, num_agents_per_testtube, num_testtubes_per_agent, dynamic, attribute, value_list)
+
+    #################
 
     def add_partial_to_ready_queue(self):
         for testtube in self.cur_testtubes:
