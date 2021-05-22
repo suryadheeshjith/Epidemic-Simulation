@@ -132,7 +132,7 @@ class World():
         return tdict
 
     #Averages multiple simulations and plots a single plot
-    def simulate_worlds(self,plot=True):
+    def simulate_worlds(self,plot=True, extra=False):
 
         tdict={}
         for state in self.model.individual_state_types:
@@ -168,4 +168,8 @@ class World():
             plt.legend(list(tdict.keys()),loc='upper right', shadow=True)
             plt.show()
         else:
-            return tdict, self.total_infection, self.total_quarantined_days, self.wrongly_quarantined_days, self.total_machine_cost
+            if(not extra):
+                return tdict, self.total_infection, self.total_quarantined_days, self.wrongly_quarantined_days, self.total_machine_cost
+            else:
+                return tdict, self.total_infection, self.total_quarantined_days, self.wrongly_quarantined_days, self.total_machine_cost,\
+                            self.total_agents_tests, self.total_positives, self.total_false_positives
