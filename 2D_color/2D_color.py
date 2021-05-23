@@ -93,7 +93,6 @@ def run_simulation(test_cost,fp_cost,quarantine_cost,infection_cost,n,p,beta,gam
     config_filename = get_config_path('')
 
     # Read Config file using ReadFile.ReadConfiguration
-    make_graph(n,p)
     config_obj=ReadFile.ReadConfiguration(config_filename)
 
     agents_filename='agents.txt'
@@ -111,11 +110,11 @@ def run_simulation(test_cost,fp_cost,quarantine_cost,infection_cost,n,p,beta,gam
 	# Group/Pool Testing
     def testing_fn(timestep):
         if timestep%testing_gap==0:
-            return tests_per_period
+            return tests_per_period*napt/ntpa
         return 0
 
     Pool_Testing = Testing_Policy.Test_Policy(testing_fn)
-    Pool_Testing.add_machine('Simple_Machine', test_cost, fp, fn, turnaround_time,tests_per_period,10)
+    Pool_Testing.add_machine('Simple_Machine', test_cost, fp, fn, turnaround_time,1000,1)
     Pool_Testing.set_register_agent_testtube_func(Pool_Testing.random_agents(napt,ntpa))
     policy_list.append(Pool_Testing)
 
@@ -128,6 +127,7 @@ def run_simulation(test_cost,fp_cost,quarantine_cost,infection_cost,n,p,beta,gam
     ###############################################################################################
 
     world_obj=World.World(config_obj,model,policy_list,event_restriction_fn,agents_filename,interactions_files_list,locations_filename,events_files_list)
+    # world_obj.simulate_worlds(plot=True)
     tdict, total_infection, total_quarantined_days, wrongly_quarantined_days, total_test_cost = world_obj.simulate_worlds(plot=False)
     cost = total_infection*infection_cost+total_quarantined_days*quarantine_cost+total_test_cost+world_obj.total_false_positives*fp_cost
     return cost
@@ -185,7 +185,7 @@ def beta_gamma(test_cost,fp_cost,quarantine_cost,infection_cost):
 
     for i in range(10):
         print("Progress left :"+str(100-i*10)+"%")
-        beta=(i*3+2)/100
+        beta=(i*5+5)/100
         for j in range(10):
             gamma=(j*3+2)/100
             opt_strat,_=opt_pool(test_cost,fp_cost,quarantine_cost,infection_cost,n,p,beta,gamma,testing_gap,tests_per_period,turnaround_time,restriction_time,fn,fp)
@@ -204,7 +204,7 @@ def turnaround_restriction(test_cost,fp_cost,quarantine_cost,infection_cost):
         print("Progress left :"+str(100-i*20)+"%")
         turnaround_time=i
         for j in range(10):
-            restriction_time=j+1
+            restriction_time=j+3
             opt_strat,_=opt_pool(test_cost,fp_cost,quarantine_cost,infection_cost,n,p,beta,gamma,testing_gap,tests_per_period,turnaround_time,restriction_time,fn,fp)
             X.append(turnaround_time)
             Y.append(restriction_time)
@@ -238,7 +238,7 @@ def gap_tests(test_cost,fp_cost,quarantine_cost,infection_cost):
         print("Progress left :"+str(100-i*20)+"%")
         testing_gap=i
         for j in range(10):
-            tests_per_period=j*10+30
+            tests_per_period=j*20+50
             opt_strat,_=opt_pool(test_cost,fp_cost,quarantine_cost,infection_cost,n,p,beta,gamma,testing_gap,tests_per_period,turnaround_time,restriction_time,fn,fp)
             X.append(testing_gap)
             Y.append(tests_per_period)
@@ -248,13 +248,13 @@ def gap_tests(test_cost,fp_cost,quarantine_cost,infection_cost):
 
 
 n=1000
-p=0.002
-beta=0.2
-gamma=0.1
-testing_gap=0
-tests_per_period=60
+p=0.003
+beta=0.25
+gamma=0.2
+testing_gap=1
+tests_per_period=90
 turnaround_time=0
-restriction_time=10
+restriction_time=5
 fn=0.1
 fp=0.1
 
@@ -284,4 +284,4 @@ if __name__=="__main__":
     beta_gamma(test_cost,fp_cost,quarantine_cost,infection_cost)
     turnaround_restriction(test_cost,fp_cost,quarantine_cost,infection_cost)
     gap_tests(test_cost,fp_cost,quarantine_cost,infection_cost)
-    n_p(test_cost,fp_cost,quarantine_cost,infection_cost)
+    # n_p(test_cost,fp_cost,quarantine_cost,infection_cost)
