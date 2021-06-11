@@ -1,9 +1,9 @@
-Number of worlds <10>
+Number of worlds <50>
 Number of Days <50>
-Agent Parameter Keys <Agent Index>
+Agent Parameter Keys <Agent Index:Age:Blood Group:Fear>
 Agent list filename <agents.txt>
 Interaction Info Keys <Agent Index:Interacting Agent Index>
-Interaction Files list filename <interaction_files_list.txt>
+Interaction Files list filename <interaction_files_list35.txt>
 Location Parameter Keys <>
 Location list filename <>
 Event Parameter Keys <>

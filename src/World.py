@@ -36,7 +36,7 @@ def get_accumulated_result(agent,history):
     return total_false_positive
 
 class World():
-    def __init__(self,config_obj,model,policy_list,event_restriction_fn,agents_filename,interactionFiles_list,locations_filename,eventFiles_list):
+    def __init__(self,example_path, config_obj,model,policy_list,event_restriction_fn,agents_filename,interactionFiles_list,locations_filename,eventFiles_list):
         self.config_obj=config_obj
         self.policy_list=policy_list
         self.event_restriction_fn=event_restriction_fn
@@ -45,6 +45,7 @@ class World():
         self.model=model
         self.interactionFiles_list=interactionFiles_list
         self.eventFiles_list=eventFiles_list
+        self.example_path = example_path
 
         # Costs
         self.total_quarantined_days = 0
@@ -135,6 +136,8 @@ class World():
             tdict[state]=[0]*(self.config_obj.time_steps+1)
 
         for i in range(self.config_obj.worlds):
+            if(i%10==0):
+                print("World {0}".format(i))
             sdict,_,_ = self.one_world()
             for state in self.model.individual_state_types:
                 for j in range(len(tdict[state])):
@@ -154,13 +157,18 @@ class World():
         #print("Total Positives : ",self.total_positives)
         #print("Total False Positives : ",self.total_false_positives)
 
+
         if(plot):
+            # plt.style.use('ggplot')
+            plt.style.use('tableau-colorblind10')
             for state in tdict.keys():
                 plt.plot(tdict[state])
-
             plt.title(self.model.name+' plot')
-            plt.legend(list(tdict.keys()),loc='upper right', shadow=True)
+            plt.xlabel("Days Passed (Time Steps)")
+            plt.ylabel("Population")
+            plt.legend(list(tdict.keys()), frameon=False, shadow=True)
             plt.show()
+            return tdict
         else:
             if(not extra):
                 return tdict, self.total_infection, self.total_quarantined_days, self.wrongly_quarantined_days, self.total_machine_cost

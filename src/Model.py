@@ -70,7 +70,7 @@ class StochasticModel():
                 contact_index=c_dict['Interacting Agent Index']
                 contact_agent=agents[contact_index]
                 if contact_agent.can_contribute_infection and agent.can_recieve_infection:
-                    p_not_inf*=(1-fn(p_infected_states_list,contact_agent,c_dict,current_time_step))
+                    p_not_inf*=(1-fn(agent,p_infected_states_list,contact_agent,c_dict,current_time_step))
 
             for p in agent.event_probabilities:
                 p_not_inf*=(1-p)
