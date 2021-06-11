@@ -91,7 +91,7 @@ if __name__=="__main__":
     ##########################################################################################
 
     fp = open("Table_of_params.txt","w")
-    fp.write("\t\t Agents/day \t Total Infections \t Total Positives \t Total False Positives\n")
+    fp.write("\t\t Agents/day \t Total Infections \t Total Positives \t Total False Positives \t Total Quarantined Days\n")
     num_tests = 40
     pools_list = [(1,1),(2,1),(3,2),(4,2),(5,2),(5,3),(6,2),(6,3),(4,3)]
     turnaround_time = 7
@@ -101,7 +101,7 @@ if __name__=="__main__":
         world_obj=World.World(config_obj,model,policy_list,event_restriction_fn,agents_filename,interactions_files_list,locations_filename,events_files_list)
         tdict, total_infection, total_quarantined_days, wrongly_quarantined_days, total_test_cost,\
         total_positives, total_false_positives = world_obj.simulate_worlds(plot=False, extra=True)
-        fp.write("({0},{1})\t\t\t{2:.2f}\t\t\t\t\t{3}\t\t\t\t\t\t{4}\t\t\t\t\t\t{5}\n".format(i,j,num_tests*i/j,total_infection,total_positives,total_false_positives))
+        fp.write("({0},{1})\t\t\t{2:.2f}\t\t\t\t\t{3}\t\t\t\t\t\t{4}\t\t\t\t\t\t{5}\t\t\t\t\t\t\t\t\t{6}\n".format(i,j,num_tests*i/j,total_infection,total_positives,total_false_positives,total_quarantined_days))
 
     fp.close()
     ###############################################################################################
