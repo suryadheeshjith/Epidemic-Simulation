@@ -92,11 +92,12 @@ if __name__=="__main__":
 
     fp = open("Table_of_params.txt","w")
     fp.write("\t\t Agents/day \t Total Infections \t Total Positives \t Total False Positives\n")
-    num_tests = 100
+    num_tests = 40
     pools_list = [(1,1),(2,1),(3,2),(4,2),(5,2),(5,3),(6,2),(6,3),(4,3)]
+    turnaround_time = 7
     # pools_list = [(1,1)]
     for i,j in pools_list:
-        policy_list, event_restriction_fn =  pg.generate_group_testing_tests_policy(num_tests, i, j)
+        policy_list, event_restriction_fn =  pg.generate_group_testing_tests_policy_turn(num_tests, i, j,turnaround_time)
         world_obj=World.World(config_obj,model,policy_list,event_restriction_fn,agents_filename,interactions_files_list,locations_filename,events_files_list)
         tdict, total_infection, total_quarantined_days, wrongly_quarantined_days, total_test_cost,\
         total_positives, total_false_positives = world_obj.simulate_worlds(plot=False, extra=True)
