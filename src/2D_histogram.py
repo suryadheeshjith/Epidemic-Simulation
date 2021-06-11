@@ -5,6 +5,7 @@ import World
 import importlib.util
 import os.path as osp
 import policy_generator as pg
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -89,10 +90,14 @@ if __name__=="__main__":
 
     ##########################################################################################
 
-    fp = open("2D_infection_test_policy_results.txt","w")
+    fp = open("2D_histogram.txt","w")
     num_tests = 100
     pools_list = [(3,2),(4,2),(5,2),(None,None)]
     tdicts = []
+    ttinfect = []
+    ttq = []
+    ttfp = []
+    ttc = []
     for i,j in pools_list:
         if(i and j):
             policy_list, event_restriction_fn =  pg.generate_2D_infection_test_policy(num_tests, i, j)
@@ -100,31 +105,55 @@ if __name__=="__main__":
             policy_list, event_restriction_fn =  pg.generate_2D_infection_test_policy(num_tests, i, j, True)
 
         world_obj=World.World(config_obj,model,policy_list,event_restriction_fn,agents_filename,interactions_files_list,locations_filename,events_files_list)
-        tdict, total_infection, total_quarantined_days, wrongly_quarantined_days, total_test_cost = world_obj.simulate_worlds(plot=False)
+        tdict, total_infection, total_quarantined_days, wrongly_quarantined_days, total_test_cost,total_positives, total_false_positives = world_obj.simulate_worlds(plot=False, extra=True)
         fp.write("("+str(i)+","+str(j)+") : ")
         fp.write(str(tdict)+"\n")
+        fp.write("Total infection : {0}\n".format(str(total_infection)))
+        fp.write("Total Quarantined days : {0}\n".format(str(total_quarantined_days)))
+        fp.write("Total False Positives : {0}\n".format(str(total_false_positives)))
+        fp.write("Total Test cost : {0}\n".format(str(total_test_cost)))
+
         tdicts.append(tdict)
+        ttinfect.append(total_infection)
+        ttq.append(total_quarantined_days)
+        ttfp.append(total_false_positives)
+        ttc.append(total_test_cost)
 
     fp.close()
-    # Plots
-    fig,a =  plt.subplots(2,2)
-
-    for indx,(i,j) in enumerate(pools_list):
-        if(indx==0):
-            plotter = a[0][0]
-        elif(indx==1):
-            plotter = a[0][1]
-        elif(indx==2):
-            plotter = a[1][0]
-        elif(indx==3):
-            plotter = a[1][1]
-
-        for state in tdict.keys():
-            plotter.plot(tdicts[indx][state])
-        if(i and j):
-           plotter.set_title("{0}, {1}".format(i,j))
+    # Plot
+    ls = []
+    for (i,j) in pools_list:
+        if i:
+            ls.append('({0},{1})'.format(i,j))
         else:
-            plotter.set_title("Dynamic")
-        plotter.legend(list(tdict.keys()),loc='upper right', shadow=True)
-    plt.show()
+            ls.append('Dynamic'.format(i,j))
+
+    barWidth = 0.25
+    # fig = plt.subplots(figsize =(12, 8))
+
+    # Set position of bar on X axis
+    br1 = np.arange(len(ttinfect))
+    br2 = [x + barWidth for x in br1]
+    br3 = [x + barWidth for x in br2]
+
+    # Make the plot
+    plt.bar(br1, ttinfect, color ='r', width = barWidth,edgecolor ='grey', label ='Total Infection')
+    plt.bar(br2, ttq, color ='g', width = barWidth,edgecolor ='grey', label ='Total Quarantined Days')
+    plt.bar(br3, ttfp, color ='b', width = barWidth,edgecolor ='grey', label ='Total False Positive')
+
+    # Adding Xticks
+    # plt.xlabel('Branch', fontweight ='bold', fontsize = 15)
+    # plt.ylabel('Students passed', fontweight ='bold', fontsize = 15)
+    plt.xticks([r + barWidth for r in range(len(ttinfect))],ls)
+
+    plt.legend()
+    # plt.show()
+    matplotlib.use("pgf")
+    matplotlib.rcParams.update({
+        "pgf.texsystem": "pdflatex",
+        'font.family': 'serif',
+        'text.usetex': True,
+        'pgf.rcfonts': False,
+    })
+    plt.savefig('2D_histogram.pgf')
     ###############################################################################################
