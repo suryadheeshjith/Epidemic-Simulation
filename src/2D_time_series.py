@@ -135,5 +135,5 @@ if __name__=="__main__":
         'text.usetex': True,
         'pgf.rcfonts': False,
     })
-    plotter.savefig('2D_time_series.pgf')
+    plt.savefig('2D_time_series.pgf')
     ###############################################################################################
