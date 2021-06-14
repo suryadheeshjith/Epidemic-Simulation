@@ -45,14 +45,15 @@ class agent_policy_based_lockdown(Agent_Policy):
                 if(time_step - last_time_step <=self.time_period):
                     result = self.get_accumulated_result(history,last_time_step)
                     if(result in self.value_list):
+                        turnaround_time = history[-1].turnaround_time
                         agent.tested_positive+=1
                         if self.do_lockdown_fn(time_step):
                             flag = 1
                             agent.restrict_recieve_infection()
                             agent.restrict_contribute_infection()
-                            self.append_quarantine_list(agent,last_time_step,time_step,True)
+                            self.append_quarantine_list(agent,last_time_step,time_step,turnaround_time,True)
                         else:
-                            self.append_quarantine_list(agent,last_time_step,time_step,False)
+                            self.append_quarantine_list(agent,last_time_step,time_step,turnaround_time,False)
 
             if(flag==0):
                 agent.quarantined.append("No")
@@ -72,9 +73,9 @@ class agent_policy_based_lockdown(Agent_Policy):
         return "Positive"
 
 
-    def append_quarantine_list(self,agent,last_time_step,time_step,lockdown):
+    def append_quarantine_list(self,agent,last_time_step,time_step,turnaround_time,lockdown):
         if(lockdown):
-            if(last_time_step==time_step):
+            if(time_step-last_time_step==turnaround_time):#Should be time_step-last_time_step==turnaroundtime
                 if(agent.state!="Infected"):
                     agent.quarantine_list.append("Wrong")
 
@@ -88,7 +89,7 @@ class agent_policy_based_lockdown(Agent_Policy):
                     agent.quarantine_list.append("Right")
 
         else:
-            if(last_time_step==time_step):
+            if(time_step-last_time_step==turnaround_time):
                 if(agent.state!="Infected"):
                     agent.quarantine_list.append("W")
 

@@ -7,11 +7,12 @@ import json
 
 class Result():
 
-    def __init__(self, result, agents, machine_name, time_step):
+    def __init__(self, result, agents, machine_name, time_step, turnaround_time):
         self.result = result
         self.agents = agents
         self.machine_name = machine_name
         self.time_step = time_step
+        self.turnaround_time = turnaround_time
 
     def get_machine_name(self):
         return self.machine_name
@@ -103,7 +104,7 @@ class Machine():
     def populate_machine_results(self,time_step):
         if(time_step - self.start_step>=self.turnaround_time):
             for testtube_with_result in self.testtubes:
-                result_obj = Result(testtube_with_result.testtube_result, testtube_with_result.agents_test, self.machine_name, time_step)
+                result_obj = Result(testtube_with_result.testtube_result, testtube_with_result.agents_test, self.machine_name, self.start_step, self.turnaround_time)
                 testtube_with_result.set_in_machine(False)
                 self.results.append(result_obj)
 
