@@ -1,4 +1,5 @@
 # Testing Paper
+Built using [Episimmer](https://github.com/healthbadge/episimmer) <br>
 
 ## Dependencies
 
