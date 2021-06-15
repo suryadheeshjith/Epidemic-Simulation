@@ -7,6 +7,13 @@ import os.path as osp
 import policy_generator as pg
 import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use("pgf")
+matplotlib.rcParams.update({
+    "pgf.texsystem": "pdflatex",
+    'font.family': 'serif',
+    'text.usetex': True,
+    'pgf.rcfonts': False,
+})
 import numpy as np
 
 def module_from_file(module_name, file_path):
@@ -148,12 +155,5 @@ if __name__=="__main__":
 
     plt.legend()
     # plt.show()
-    matplotlib.use("pgf")
-    matplotlib.rcParams.update({
-        "pgf.texsystem": "pdflatex",
-        'font.family': 'serif',
-        'text.usetex': True,
-        'pgf.rcfonts': False,
-    })
     plt.savefig('2D_histogram.pgf')
     ###############################################################################################

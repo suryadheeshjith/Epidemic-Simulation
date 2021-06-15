@@ -93,8 +93,8 @@ if __name__=="__main__":
     fp = open("Table_of_params.txt","w")
     fp.write("\t\t Agents/day \t Total Infections \t Total Positives \t Total False Positives \t Total Quarantined Days\n")
     num_tests = 40
-    pools_list = [(1,1),(2,1),(3,2),(4,2),(5,2),(5,3),(6,2),(6,3),(4,3)]
-    turnaround_time = 7
+    pools_list = [(1,1),(2,1),(3,2),(4,2),(4,3),(5,2),(5,3),(6,2),(6,3)]
+    turnaround_time = 0
     # pools_list = [(1,1)]
     for i,j in pools_list:
         policy_list, event_restriction_fn =  pg.generate_group_testing_tests_policy_turn(num_tests, i, j,turnaround_time)
