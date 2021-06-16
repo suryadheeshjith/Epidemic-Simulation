@@ -92,7 +92,7 @@ if __name__=="__main__":
 
     fp = open("Table_of_params.txt","w")
     fp.write("\t\t Agents/day \t Total Infections \t\t Total Pool Positives \t Total Positives \t Total False Positives \t Total Quarantined Days \t wrongly_quarantined_days\n")
-    num_tests = 3
+    num_tests = 90
     pools_list = [(1,1),(2,1),(3,2),(4,2),(4,3),(5,2),(5,3),(6,2),(6,3)]
     turnaround_time = 0
     # pools_list = [(1,1)]

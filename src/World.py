@@ -37,7 +37,6 @@ def get_timesteps(l):
     return list(set(answer))
 
 def get_accumulated_result(agent,history):
-    print(agent.states,list(map(lambda x:(x.result,x.time_step),history)))
     total_false_positive = 0
     total_positive=0
 
