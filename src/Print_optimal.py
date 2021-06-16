@@ -51,6 +51,22 @@ def print_optimal_rows(a,b):
     return X, Y, Z
 
 
+# Beta, gamma
+# X,Y,Z = print_optimal_rows('beta','gamma')
+# plot(X,Y,Z,"Optimal pooling strategy given Beta and Gamma","Rate of Infection(Beta)","Rate of Recovery(Gamma) ")
 
-X,Y,Z = print_optimal_rows('turnaround_time','restriction_time')
-plot(X,Y,Z,"Optimal pooling strategy given Turnaround and Restriction time","Test result turnaround time","Positive agent restriction time")
+# fn, fp
+# X,Y,Z = print_optimal_rows('fn','fp')
+# plot(X,Y,Z,"Optimal pooling strategy given False Negative and False Positive rates","False Negative rate","False Positive rate")
+
+# Turnaround time, restriction time
+# X,Y,Z = print_optimal_rows('turnaround_time','restriction_time')
+# plot(X,Y,Z,"Optimal pooling strategy given Turnaround and Restriction time","Test result turnaround time","Positive agent restriction time")
+
+# Gap tests, tests_per_period
+# X,Y,Z = print_optimal_rows('testing_gap','tests_per_period')
+# plot(X,Y,Z,"Optimal pooling strategy given number of tests and period for testing","Gap between testing periods","Tests per testing period")
+
+# n, p
+X,Y,Z = print_optimal_rows('n','p')
+plot(X,Y,Z,"Optimal pooling strategy given n and p","Number of agents (n)","Probability of edge (p)")
