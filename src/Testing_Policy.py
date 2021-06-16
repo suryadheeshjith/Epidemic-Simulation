@@ -162,6 +162,7 @@ class Test_Policy(Agent_Policy):
         self.statistics = {}
         self.current_machines = {}
         self.total_cost=0
+        self.positive_pools=0
 
         assert callable(agents_per_step_fn)
         self.agents_per_step_fn = agents_per_step_fn
@@ -431,6 +432,10 @@ class Test_Policy(Agent_Policy):
             if(not machine.has_empty_results()):
                 results += machine.get_results()
                 machine.reset_machine()
+
+        for result in results:
+            if result.get_result()=='Positive':
+                self.positive_pools+=1
 
         self.release_results_to_agents(results)
         self.release_results_to_policy(results, time_step)

@@ -7,13 +7,14 @@ import os.path as osp
 import policy_generator as pg
 import matplotlib
 import matplotlib.pyplot as plt
+'''
 matplotlib.use("pgf")
 matplotlib.rcParams.update({
     "pgf.texsystem": "pdflatex",
     'font.family': 'serif',
     'text.usetex': True,
     'pgf.rcfonts': False,
-})
+})'''
 import numpy as np
 
 def module_from_file(module_name, file_path):
@@ -98,7 +99,7 @@ if __name__=="__main__":
     ##########################################################################################
 
     fp = open("2D_time_series.txt","w")
-    num_tests = 100
+    num_tests = 60
     pools_list = [(None,None),(1,1),(2,1),(3,2)]
     tdicts = []
     for i,j in pools_list:
@@ -137,6 +138,6 @@ if __name__=="__main__":
         plotter.legend(list(tdicts[0].keys()),loc='upper right', shadow=True)
 
     plt.show()
-    plt.savefig('2D_time_series.pgf')
+    #plt.savefig('2D_time_series.pgf')
 
     ###############################################################################################
