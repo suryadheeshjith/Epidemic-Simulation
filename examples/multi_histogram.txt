@@ -1,0 +1,51 @@
+(Infection cost, quarantine cost, false positive cost)
+(10,3,1)
+Total Cost for (1,1) = 19123.2
+Total Cost for (2,1) = 30505.9
+Total Cost for (3,2) = 21694.2
+Total Cost for (4,2) = 26785.800000000003
+Total Cost for (4,3) = 19627.4
+Total Cost for (5,2) = 32006.699999999997
+Total Cost for (5,3) = 22616.899999999998
+Total Cost for (6,2) = 36085.9
+Total Cost for (6,3) = 25436.9
+(5,3,1)
+Total Cost for (1,1) = 13857.300000000001
+Total Cost for (2,1) = 25299.0
+Total Cost for (3,2) = 16743.5
+Total Cost for (4,2) = 21976.499999999996
+Total Cost for (4,3) = 14528.500000000002
+Total Cost for (5,2) = 26443.000000000004
+Total Cost for (5,3) = 17469.5
+Total Cost for (6,2) = 31624.999999999996
+Total Cost for (6,3) = 20772.699999999997
+(3,1,1)
+Total Cost for (1,1) = 6176.9
+Total Cost for (2,1) = 10154.800000000001
+Total Cost for (3,2) = 7191.200000000001
+Total Cost for (4,2) = 9090.099999999999
+Total Cost for (4,3) = 6366.900000000001
+Total Cost for (5,2) = 11055.5
+Total Cost for (5,3) = 7469.400000000001
+Total Cost for (6,2) = 12960.800000000001
+Total Cost for (6,3) = 8831.0
+(5,1,4)
+Total Cost for (1,1) = 8800.6
+Total Cost for (2,1) = 14833.9
+Total Cost for (3,2) = 10099.6
+Total Cost for (4,2) = 12923.7
+Total Cost for (4,3) = 9218.800000000001
+Total Cost for (5,2) = 15945.400000000001
+Total Cost for (5,3) = 10526.3
+Total Cost for (6,2) = 19161.6
+Total Cost for (6,3) = 12565.800000000001
+(3,3,3)
+Total Cost for (1,1) = 12305.099999999999
+Total Cost for (2,1) = 24977.100000000002
+Total Cost for (3,2) = 15529.5
+Total Cost for (4,2) = 20766.300000000003
+Total Cost for (4,3) = 13153.500000000002
+Total Cost for (5,2) = 27319.500000000004
+Total Cost for (5,3) = 16653.6
+Total Cost for (6,2) = 32544.300000000003
+Total Cost for (6,3) = 19736.7

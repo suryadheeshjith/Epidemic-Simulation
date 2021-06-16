@@ -7,6 +7,7 @@ import os.path as osp
 import policy_generator as pg
 import matplotlib
 import matplotlib.pyplot as plt
+import random
 # matplotlib.use("pgf")
 # matplotlib.rcParams.update({
 #     "pgf.texsystem": "pdflatex",
@@ -81,6 +82,7 @@ def get_policy(example_path):
     return policy_list, event_restriction_fn
 
 if __name__=="__main__":
+    random.seed(42)
     # import tracemalloc
     # tracemalloc.start()
     example_path = get_example_path()
@@ -106,9 +108,13 @@ if __name__=="__main__":
                         '(3,3,3)':(3,3,3)
                         }
     # cost_structures = {'(10,3,1)':(10,3,1),'(5,3,1)':(5,3,1)}
-    num_tests = 40
     pools_list = [(1,1),(2,1),(3,2),(4,2),(4,3),(5,2),(5,3),(6,2),(6,3)]
-    turnaround_time = 0
+    testing_gap=1
+    tests_per_period=170
+    turnaround_time=0
+    restriction_time=5
+    fn=0.1
+    falsep=0.1
     cost_dict = {}
 
 
@@ -120,7 +126,7 @@ if __name__=="__main__":
         fp.write("{0}\n".format(key))
 
         for i,j in pools_list:
-            policy_list, event_restriction_fn =  pg.generate_group_testing_tests_policy_turn(num_tests, i, j,turnaround_time)
+            policy_list, event_restriction_fn =  pg.generate_group_testing_colab(i, j,testing_gap,tests_per_period,turnaround_time,restriction_time,fn,falsep)
             world_obj=World.World(config_obj,model,policy_list,event_restriction_fn,agents_filename,interactions_files_list,locations_filename,events_files_list)
             tdict, total_infection, total_quarantined_days, wrongly_quarantined_days, total_test_cost,\
             total_positives, total_false_positives = world_obj.simulate_worlds(plot=False, extra=True)

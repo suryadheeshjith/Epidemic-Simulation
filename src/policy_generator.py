@@ -41,6 +41,29 @@ def generate_group_testing_tests_policy_turn(num_tests, num_agents_per_test, num
 
     return policy_list,event_restriction_fn
 
+def generate_group_testing_colab(napt,ntpa,testing_gap,tests_per_period,turnaround_time,restriction_time,fn,fp):
+
+    testing_gap+=1
+
+    policy_list=[]
+
+    def testing_fn(timestep):
+      if timestep%testing_gap==0:
+          return tests_per_period*napt/ntpa
+      return 0
+
+    Pool_Testing = Testing_Policy.Test_Policy(testing_fn)
+    Pool_Testing.add_machine('Simple_Machine', 0, fp, fn, turnaround_time,1000,1)
+    Pool_Testing.set_register_agent_testtube_func(Pool_Testing.random_agents(napt,ntpa))
+    policy_list.append(Pool_Testing)
+
+    ATP = Lockdown_Policy.agent_policy_based_lockdown("Testing",["Positive"],lambda x:True,restriction_time)
+    policy_list.append(ATP)
+
+    def event_restriction_fn(agent,event_info,current_time_step):
+        return False
+    return policy_list,event_restriction_fn
+
 def generate_fp_fn_policy(num_tests, fp, fn):
     policy_list=[]
 
