@@ -10,32 +10,46 @@ import math
 import ReadFile
 from Testing_Policy import Test_Policy
 
-def get_accumulated_result(agent,history):
+def get_certificate(l):
+    if l==[]:
+        return None
 
+    for result in l:
+        if result.result =='Negative':
+            return 'Negative'
+    return 'Positive'
+
+def get_l_timestep(l,timestep):
+    answer=[]
+
+    for result in l:
+        if result.time_step==timestep:
+            answer.append(result)
+
+    return answer
+
+def get_timesteps(l):
+    answer=[]
+
+    for result in l:
+        answer.append(result.time_step)
+
+    return list(set(answer))
+
+def get_accumulated_result(agent,history):
+    print(agent.states,list(map(lambda x:(x.result,x.time_step),history)))
     total_false_positive = 0
     total_positive=0
 
-    indx = len(history)-1
-    last_time_step = history[indx].time_step
+    timesteps=get_timesteps(history)
+    for timestep in timesteps:
+        l=get_l_timestep(history,timestep)
+        cert=get_certificate(l)
 
-    while(indx>=0):
-        flag=0
-        while(indx>=0 and history[indx].time_step==last_time_step):
-            if(history[indx].result == "Negative"):
-                flag=1
-                indx-=1
-                break
-
-            indx-=1
-
-        if flag==0:
+        if cert=='Positive':
             total_positive+=1
-        if(flag==0 and agent.states[last_time_step]!="Infected"):
-            total_false_positive+=1
-        try:
-            last_time_step = history[indx].time_step
-        except:
-            break
+            if agent.states[timestep]!='Infected':
+                total_false_positive+=1
 
     return total_false_positive,total_positive
 

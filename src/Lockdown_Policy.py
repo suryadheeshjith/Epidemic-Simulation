@@ -44,16 +44,13 @@ class agent_policy_based_lockdown(Agent_Policy):
                 last_time_step = history[-1].time_step
                 if(time_step - last_time_step <=self.time_period):
                     result = self.get_accumulated_result(history,last_time_step)
-                    if(result in self.value_list):
+                    if(result =='Positive'):
                         turnaround_time = history[-1].turnaround_time
                         agent.tested_positive+=1
-                        if self.do_lockdown_fn(time_step):
-                            flag = 1
-                            agent.restrict_recieve_infection()
-                            agent.restrict_contribute_infection()
-                            self.append_quarantine_list(agent,last_time_step,time_step,turnaround_time,True)
-                        else:
-                            self.append_quarantine_list(agent,last_time_step,time_step,turnaround_time,False)
+                        flag = 1
+                        agent.restrict_recieve_infection()
+                        agent.restrict_contribute_infection()
+                        self.append_quarantine_list(agent,last_time_step,time_step,turnaround_time,True)
 
             if(flag==0):
                 agent.quarantined.append("No")
@@ -83,21 +80,12 @@ class agent_policy_based_lockdown(Agent_Policy):
                     agent.quarantine_list.append("Right")
 
             else:
-                if(agent.quarantine_list[-1]=="W" or agent.quarantine_list[-1]=="Wrong"):
+                if(agent.quarantine_list[-1]=="Wrong"):
                     agent.quarantine_list.append("Wrong")
-                elif(agent.quarantine_list[-1]=="R" or agent.quarantine_list[-1]=="Right"):
+                elif(agent.quarantine_list[-1]=="Right"):
                     agent.quarantine_list.append("Right")
 
-        else:
-            if(time_step-last_time_step==turnaround_time):
-                if(agent.state!="Infected"):
-                    agent.quarantine_list.append("W")
 
-                else:
-                    agent.quarantine_list.append("R")
-
-            else:
-                agent.quarantine_list.append(agent.quarantine_list[-1])
 
 
 
