@@ -7,12 +7,11 @@ import json
 
 class Result():
 
-    def __init__(self, result, agent, machine_name, time_step, time_step_done, turnaround_time):
+    def __init__(self, result, agents, machine_name, time_step, turnaround_time):
         self.result = result
-        self.agent = agent
+        self.agents = agents
         self.machine_name = machine_name
         self.time_step = time_step
-        self.time_step_done = time_step_done
         self.turnaround_time = turnaround_time
 
     def get_machine_name(self):
@@ -21,6 +20,8 @@ class Result():
     def get_result(self):
         return self.result
 
+    def get_num_agents(self):
+        return len(self.agents)
 
 
 class Machine():
@@ -86,8 +87,8 @@ class Machine():
     def run_single_test(self, testtube, infected_states):
         result = "Negative"
 
-        for agent in testtube.testtube_agent_dict.keys():
-            if(testtube.testtube_agent_dict[agent]["state"] in infected_states):
+        for agent in testtube.agents_test:
+            if(agent.state in infected_states):
                 result="Positive"
                 break
 
@@ -103,15 +104,9 @@ class Machine():
     def populate_machine_results(self,time_step):
         if(time_step - self.start_step>=self.turnaround_time):
             for testtube_with_result in self.testtubes:
-                self.save_results(testtube_with_result,time_step)
+                result_obj = Result(testtube_with_result.testtube_result, testtube_with_result.agents_test, self.machine_name, self.start_step, self.turnaround_time)
                 testtube_with_result.set_in_machine(False)
-
-
-    def save_results(self, testtube,time_step):
-        for agent in testtube.testtube_agent_dict.keys():
-            time_step_entered = testtube.testtube_agent_dict[agent]["time_step"]
-            result_obj = Result(testtube.testtube_result, agent, self.machine_name, time_step_entered, time_step, self.turnaround_time)
-            self.results.append(result_obj)
+                self.results.append(result_obj)
 
     def get_results(self):
         return self.results
@@ -124,15 +119,15 @@ class Machine():
 class Testtube():
 
     def __init__(self):
-        self.testtube_agent_dict = {}
+        self.agents_test = []
         self.testtube_result = None
         self.in_machine = False
 
-    def register_agent(self,agent,time_step):
-        self.testtube_agent_dict[agent] = {"state":agent.state, "time_step":time_step}
+    def register_agent(self,agent):
+        self.agents_test.append(agent)
 
     def get_num_agents(self):
-        return len(self.testtube_agent_dict)
+        return len(self.agents_test)
 
     def set_result(self, result):
         self.testtube_result = result
@@ -142,11 +137,11 @@ class Testtube():
             self.in_machine = bool_val
         else:
             self.in_machine = bool_val
-            self.testtube_agent_dict = {}
+            self.agents_test = []
             self.testtube_result = None
 
     def is_empty(self):
-        if(len(self.testtube_agent_dict)==0):
+        if(len(self.agents_test)==0):
             return True
 
         return False
@@ -172,15 +167,6 @@ class Test_Policy(Agent_Policy):
         assert callable(agents_per_step_fn)
         self.agents_per_step_fn = agents_per_step_fn
 
-    def reset(self):
-        self.statistics = {}
-        self.ready_queue = deque()
-        for machine in self.machine_list:
-            machine.machine_cost = 0
-            machine.testtubes = []
-            machine.results = []
-            machine.available = True
-            machine.start_step = None
 
     def enact_policy(self,time_step,agents,locations,model):
         self.new_time_step(time_step)
@@ -192,6 +178,16 @@ class Test_Policy(Agent_Policy):
         self.release_results(time_step)
         self.end_time_step(time_step)
 
+    def reset(self):
+        self.statistics = {}
+        self.ready_queue = deque()
+        self.total_cost = 0
+        for machine in self.machine_list:
+            machine.machine_cost = 0
+            machine.testtubes = []
+            machine.results = []
+            machine.available = True
+            machine.start_step = None
 
     def set_register_agent_testtube_func(self,fn):
         self.register_agent_testtube_func = fn
@@ -214,10 +210,9 @@ class Test_Policy(Agent_Policy):
             for i in range(num):
                 self.machine_list.append(Machine(machine_name, cost, false_positive_rate, false_negative_rate, turnaround_time, capacity))
 
-
     def initialize_statistics_logs(self,time_step):
         self.statistics[time_step] = {'Total Tests':0, 'Total Positive Results':0,\
-                                        'Total Negative Results':0, 'Total Agents Tested':0}
+                                         'Total Negative Results':0, 'Total Agents Tested':0}
 
         for machine_name in self.current_machines.keys():
             self.statistics[time_step][machine_name] = {'Number of Tests':0, 'Number of Positive Results':0,\
@@ -271,9 +266,8 @@ class Test_Policy(Agent_Policy):
                 cur_list = random.sample(self.cur_testtubes, min(num_testtubes_per_agent,len(self.cur_testtubes)))
 
                 for testtube in cur_list:
-                    testtube.register_agent(agent,time_step)
-
-                    if(testtube.get_num_agents()>=num_agents_per_testtube):
+                    testtube.register_agent(agent)
+                    if(len(testtube.agents_test)>=num_agents_per_testtube):
                         self.ready_queue.append(testtube)
                         self.cur_testtubes.remove(testtube)
             else:
@@ -282,7 +276,6 @@ class Test_Policy(Agent_Policy):
     def random_agents(self, num_agents_per_testtube=1, num_testtubes_per_agent=1, attribute=None, value_list=[]):
         assert isinstance(value_list,list)
         return partial(self.full_random_agents, num_agents_per_testtube, num_testtubes_per_agent, attribute, value_list)
-
 
     def full_friendship_testing(self, min_steps_since_last_test, attribute, value_list, agents, time_step):
         agents_copy = copy.copy(list(agents))
@@ -412,7 +405,8 @@ class Test_Policy(Agent_Policy):
 
     def release_results_to_agents(self,results):
         for result_obj in results:
-            self.update_agent_policy_history(result_obj.agent,result_obj)
+            for agent in result_obj.agents:
+                self.update_agent_policy_history(agent,result_obj)
 
     def release_results_to_policy(self,results,time_step):
         for result_obj in results:
@@ -428,8 +422,8 @@ class Test_Policy(Agent_Policy):
                 self.statistics[time_step][machine_name]['Number of Negative Results'] +=1
                 self.statistics[time_step]['Total Negative Results'] += 1
 
-            self.statistics[time_step][machine_name]['Number of Agents Tested'] += 1
-            self.statistics[time_step]['Total Agents Tested'] += 1
+            self.statistics[time_step][machine_name]['Number of Agents Tested'] += result_obj.get_num_agents()
+            self.statistics[time_step]['Total Agents Tested'] += result_obj.get_num_agents()
 
 
     def release_results(self,time_step):
@@ -491,6 +485,7 @@ class Test_Policy(Agent_Policy):
         self.update_process_logs(time_step)
         with open("testing_stats.json", "w") as outfile:
             json.dump(self.statistics, outfile,indent=4)
+
 
     def get_test_costs(self):
         for machine in self.machine_list:
