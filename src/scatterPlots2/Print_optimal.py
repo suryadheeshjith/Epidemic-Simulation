@@ -5,25 +5,26 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import numpy as np
-
+k = 1
 def plot(X,Y,Z,title='',xlabl='',ylabl=''):
+  global k
   color_list={(1,1):'cyan',(2,1):'blue',(3,2):'green',(4,2):'pink',(5,2):'orange',(5,3):'red',(6,2):'purple',(6,3):'grey'}
-  fig,ax=plt.subplots()
+  # fig,ax=plt.subplots()
+  plt.subplot(2, 3, k)
+  k+=1
   for i in range(len(X)):
-    ax.scatter(X[i],Y[i],color=color_list[Z[i]],s=20,alpha=0.8,edgecolors='none')
+    plt.scatter(X[i],Y[i],color=color_list[Z[i]],s=20,alpha=0.8,edgecolors='none')
   #ax.legend(color_list.keys())
   #ax.grid(True)
   plt.xlabel(xlabl)
   plt.ylabel(ylabl)
   plt.title(title)
-  plt.show()
 
-def print_optimal_rows(a,b):
-    file_name = sys.argv[1]
-    test_cost = int(sys.argv[2])
-    fp_cost = int(sys.argv[3])
-    quarantine_cost = int(sys.argv[4])
-    infection_cost = int(sys.argv[5])
+def print_optimal_rows(file_name, a,b):
+    test_cost = int(sys.argv[1])
+    fp_cost = int(sys.argv[2])
+    quarantine_cost = int(sys.argv[3])
+    infection_cost = int(sys.argv[4])
     num_pool_strats = 8
     X = []
     Y = []
@@ -57,21 +58,24 @@ def print_optimal_rows(a,b):
 
 
 # Beta, gamma
-# X,Y,Z = print_optimal_rows('beta','gamma')
+# X,Y,Z = print_optimal_rows('beta_gamma.csv','beta','gamma')
 # plot(X,Y,Z,"Optimal pooling strategy given Beta and Gamma","Rate of Infection(Beta)","Rate of Recovery(Gamma) ")
-
-# fn, fp
-# X,Y,Z = print_optimal_rows('fn','fp')
+#
+# # fn, fp
+# X,Y,Z = print_optimal_rows('fn_fp.csv','fn','fp')
 # plot(X,Y,Z,"Optimal pooling strategy given False Negative and False Positive rates","False Negative rate","False Positive rate")
 
 # Turnaround time, restriction time
-X,Y,Z = print_optimal_rows('turnaround_time','restriction_time')
+X,Y,Z = print_optimal_rows('turnaround_restriction.csv','turnaround_time','restriction_time')
 plot(X,Y,Z,"Optimal pooling strategy given Turnaround and Restriction time","Test result turnaround time","Positive agent restriction time")
 
-# Gap tests, tests_per_period
-# X,Y,Z = print_optimal_rows('testing_gap','tests_per_period')
+# n, p
+# X,Y,Z = print_optimal_rows('np.csv','n','p')
+# plot(X,Y,Z,"Optimal pooling strategy given n and p","Number of agents (n)","Probability of edge (p)")
+#
+#
+# # Gap tests, tests_per_period
+# X,Y,Z = print_optimal_rows('gap_tests_20_Jun.csv','testing_gap','tests_per_period')
 # plot(X,Y,Z,"Optimal pooling strategy given number of tests and period for testing","Gap between testing periods","Tests per testing period")
 
-# n, p
-# X,Y,Z = print_optimal_rows('n','p')
-# plot(X,Y,Z,"Optimal pooling strategy given n and p","Number of agents (n)","Probability of edge (p)")
+plt.show()

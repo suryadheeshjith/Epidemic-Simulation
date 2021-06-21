@@ -7,11 +7,12 @@ import json
 
 class Result():
 
-    def __init__(self, result, agent, machine_name, time_step, time_step_done, turnaround_time):
+    def __init__(self, result, agent, machine_name, time_step, machine_start_step, time_step_done, turnaround_time):
         self.result = result
         self.agent = agent
         self.machine_name = machine_name
         self.time_step = time_step
+        self.machine_start_step = machine_start_step
         self.time_step_done = time_step_done
         self.turnaround_time = turnaround_time
 
@@ -34,7 +35,8 @@ class Machine():
         self.true_negative_rate = 1 - self.false_positive_rate
         self.turnaround_time = turnaround_time
         self.capacity = capacity
-
+        # In a time_step, a machine can run only once. EDGE CASE : If turnaround_time = 0 and the number of agents to test
+        # is greater than capacity, then the machine runs only once in that time step.
         self.testtubes = []
         self.results = []
         self.available = True
@@ -101,16 +103,18 @@ class Machine():
         testtube.set_result(result)
 
     def populate_machine_results(self,time_step):
-        if(time_step - self.start_step>=self.turnaround_time):
+        if(self.run_completed(time_step)):
             for testtube_with_result in self.testtubes:
                 self.save_results(testtube_with_result,time_step)
                 testtube_with_result.set_in_machine(False)
 
+    def run_completed(self,time_step):
+        return time_step - self.start_step>=self.turnaround_time
 
-    def save_results(self, testtube,time_step):
+    def save_results(self, testtube, time_step):
         for agent in testtube.testtube_agent_dict.keys():
             time_step_entered = testtube.testtube_agent_dict[agent]["time_step"]
-            result_obj = Result(testtube.testtube_result, agent, self.machine_name, time_step_entered, time_step, self.turnaround_time)
+            result_obj = Result(testtube.testtube_result, agent, self.machine_name, time_step_entered, self.start_step, time_step, self.turnaround_time)
             self.results.append(result_obj)
 
     def get_results(self):
@@ -183,15 +187,24 @@ class Test_Policy(Agent_Policy):
             machine.start_step = None
 
     def enact_policy(self,time_step,agents,locations,model):
+
         self.new_time_step(time_step)
+        self.populate_results_in_machine(time_step)
+        self.release_results(time_step)
         self.register_agent_testtube_func(agents, time_step)
         self.add_partial_to_ready_queue()
         self.register_testtubes_to_machines(time_step)
         self.run_tests(model,time_step)
-        self.populate_results_in_machine(time_step)
-        self.release_results(time_step)
+        self.run_edge_case(time_step)
         self.end_time_step(time_step)
 
+    def run_edge_case(self,time_step):
+        # For the case when turnaround_time = 0
+        for machine in self.machine_list:
+            if machine.run_completed(time_step):
+                self.populate_results_in_machine(time_step)
+                self.release_results(time_step)
+                break
 
     def set_register_agent_testtube_func(self,fn):
         self.register_agent_testtube_func = fn
@@ -384,6 +397,7 @@ class Test_Policy(Agent_Policy):
 
     #################
 
+
     def add_partial_to_ready_queue(self):
         for testtube in self.cur_testtubes:
             if(not testtube.is_empty()):
@@ -491,6 +505,7 @@ class Test_Policy(Agent_Policy):
         self.update_process_logs(time_step)
         with open("testing_stats.json", "w") as outfile:
             json.dump(self.statistics, outfile,indent=4)
+
 
     def get_test_costs(self):
         for machine in self.machine_list:
