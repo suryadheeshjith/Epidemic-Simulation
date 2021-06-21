@@ -8,7 +8,7 @@ import numpy as np
 k = 1
 def plot(X,Y,Z,title='',xlabl='',ylabl=''):
   global k
-  color_list={(1,1):'cyan',(2,1):'blue',(3,2):'green',(4,2):'pink',(5,2):'orange',(5,3):'red',(6,2):'purple',(6,3):'grey'}
+  color_list={(1,1):'cyan',(2,1):'blue',(3,2):'grey',(4,2):'pink',(5,2):'orange',(5,3):'red',(6,2):'purple',(6,3):'green'}
   # fig,ax=plt.subplots()
   plt.subplot(2, 3, k)
   k+=1
