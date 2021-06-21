@@ -99,20 +99,20 @@ if __name__=="__main__":
     model = get_model(example_path)
 
     fp = open("multi_histogram.txt","w")
-    fp.write("(Infection cost, quarantine cost, false positive cost)\n")
+    fp.write("(Infection cost, quarantine cost, false positive cost, test_cost)\n")
     cost_structures = {
-                        '(10,3,1)':(10,3,1),
-                        '(5,3,1)':(5,3,1),
-                        '(3,1,1)':(3,1,1),
-                        '(5,1,4)':(5,1,4),
-                        '(3,3,3)':(3,3,3)
+                        '(20,1,1,1)':(20,1,1,1),
+                        '(6,2,4,2)':(6,2,4,2),
+                        '(5,1,4,1)':(5,1,4,1),
+                        '(15,4,4,1)':(15,4,4,1),
+                        '(8,1,3,3)':(8,1,3,3)
                         }
     # cost_structures = {'(10,3,1)':(10,3,1),'(5,3,1)':(5,3,1)}
-    pools_list = [(1,1),(2,1),(3,2),(4,2),(4,3),(5,2),(5,3),(6,2),(6,3)]
+    pools_list = [(1,1),(2,1),(3,2),(4,2),(5,2),(5,3),(6,2),(6,3)]
     testing_gap=1
     tests_per_period=170
     turnaround_time=0
-    restriction_time=5
+    restriction_time=6
     fn=0.1
     falsep=0.1
     cost_dict = {}
@@ -123,14 +123,17 @@ if __name__=="__main__":
         inf_cost = value[0]
         q_cost = value[1]
         fp_cost = value[2]
+        t_cost = value[3]
         fp.write("{0}\n".format(key))
+        print(key)
 
         for i,j in pools_list:
+            print(i,j)
             policy_list, event_restriction_fn =  pg.generate_group_testing_colab(i, j,testing_gap,tests_per_period,turnaround_time,restriction_time,fn,falsep)
             world_obj=World.World(config_obj,model,policy_list,event_restriction_fn,agents_filename,interactions_files_list,locations_filename,events_files_list)
             tdict, total_infection, total_quarantined_days, wrongly_quarantined_days, total_test_cost,\
             total_positives, total_false_positives = world_obj.simulate_worlds(plot=False, extra=True)
-            total_cost = inf_cost*total_infection+q_cost*total_quarantined_days+fp_cost*total_false_positives
+            total_cost = inf_cost*total_infection+q_cost*total_quarantined_days+fp_cost*total_false_positives + t_cost*total_test_cost
             try:
                 cost_dict[key].append(total_cost)
             except:
@@ -168,7 +171,7 @@ if __name__=="__main__":
     plt.ylabel('Total Cost')
     middle = len(cost_structures)/2
     plt.xticks([r + middle*barWidth for r in range(len(pools_list))],ls)
-    plt.title("Total Costs for different cost structures - (Infection cost, Quarantine cost, False positive cost)")
+    plt.title("Total Costs for different cost structures - (Infection cost, Quarantine cost, False positive cost, test_cost)")
 
     plt.legend()
     plt.show()
