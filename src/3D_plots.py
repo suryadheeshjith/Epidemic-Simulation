@@ -93,7 +93,7 @@ if __name__=="__main__":
 
 
     ##########################################################################################
-    num_tests = 60
+    num_tests = 90
 
     ntpa_max=6
     napt_max=6
@@ -104,7 +104,7 @@ if __name__=="__main__":
     print(Y)
 
 
-    data_list={'Infected':np.zeros((ntpa_max,napt_max)),'False Positives':np.zeros((ntpa_max,napt_max))}
+    data_list={'Infected':np.zeros((ntpa_max,napt_max)),'False Positives':np.zeros((ntpa_max,napt_max)),'Quarantined':np.zeros((ntpa_max,napt_max))}
 
     for i in range(napt_max):
         for j in range(ntpa_max):
@@ -113,17 +113,12 @@ if __name__=="__main__":
             tdict, total_infection, total_quarantined_days, wrongly_quarantined_days, total_test_cost = world_obj.simulate_worlds(plot=False)
             data_list['Infected'][j][i]=total_infection
             data_list['False Positives'][j][i]=world_obj.total_false_positives
+            data_list['Quarantined'][j][i]=total_quarantined_days
 
-    
+    print(data_list)
+
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
     surf = ax.plot_surface(X, Y, np.array(data_list['False Positives']), cmap=cm.coolwarm,linewidth=0, antialiased=False)
-    # Customize the z axis.
-    #ax.set_zlim(-1.01, 1.01)
-    #ax.zaxis.set_major_locator(LinearLocator(10))
-    # A StrMethodFormatter is used automatically
-    #ax.zaxis.set_major_formatter('{x:.02f}')
-
-    # Add a color bar which maps values to colors.
     plt.xlabel("Number of Agents per testtube")
     plt.ylabel("Number of testtubes per agent")
     plt.title("Pool testing strategies vs total false positives")
@@ -135,6 +130,14 @@ if __name__=="__main__":
     plt.xlabel("Number of Agents per testtube")
     plt.ylabel("Number of testtubes per agent")
     plt.title("Pool testing strategies vs total infections")
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+    plt.show()
+
+    fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+    surf = ax.plot_surface(X, Y, np.array(data_list['Quarantined']), cmap=cm.coolwarm,linewidth=0, antialiased=False)
+    plt.xlabel("Number of Agents per testtube")
+    plt.ylabel("Number of testtubes per agent")
+    plt.title("Pool testing strategies vs total quarantine")
     fig.colorbar(surf, shrink=0.5, aspect=5)
     plt.show()
 

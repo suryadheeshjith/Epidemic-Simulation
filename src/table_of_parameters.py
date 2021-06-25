@@ -7,6 +7,8 @@ import os.path as osp
 import policy_generator as pg
 import matplotlib.pyplot as plt
 import numpy as np
+import random
+
 
 def module_from_file(module_name, file_path):
     spec = importlib.util.spec_from_file_location(module_name, file_path)
@@ -74,6 +76,7 @@ def get_policy(example_path):
 
 if __name__=="__main__":
     # import tracemalloc
+    random.seed(42)
     # tracemalloc.start()
     example_path = get_example_path()
     config_filename = get_config_path(example_path)
@@ -101,7 +104,7 @@ if __name__=="__main__":
         world_obj=World.World(config_obj,model,policy_list,event_restriction_fn,agents_filename,interactions_files_list,locations_filename,events_files_list)
         tdict, total_infection, total_quarantined_days, wrongly_quarantined_days, total_test_cost,\
         total_positives, total_false_positives = world_obj.simulate_worlds(plot=False, extra=True)
-        fp.write("({0},{1})\t\t\t{2:.2f}\t\t\t\t{3}\t\t\t{4}\t\t\t{5}\t\t\t{6}\t\t\t{7}\t\t\t{8}\n".format(i,j,num_tests*i/j,round(total_infection,2),round(world_obj.total_positive_pools,2),round(total_positives,2),round(total_false_positives,2),round(total_quarantined_days,2),round(wrongly_quarantined_days,2)))
+        fp.write("({0},{1})\t\t\t\t\t{2:.2f}\t\t\t\t\t\t{3}\t\t\t\t\t{4}\t\t\t\t\t{5}\t\t\t\t\t{6}\t\t\t\t\t{7}\t\t\t\t\t{8}\n".format(i,j,num_tests*i/j,round(total_infection,2),round(world_obj.total_positive_pools,2),round(total_positives,2),round(total_false_positives,2),round(total_quarantined_days,2),round(wrongly_quarantined_days,2)))
 
     fp.close()
     ###############################################################################################
