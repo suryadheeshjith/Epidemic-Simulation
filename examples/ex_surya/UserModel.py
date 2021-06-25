@@ -10,8 +10,8 @@ class UserModel(Model.StochasticModel):
 		individual_types=['Susceptible','Infected','Recovered']
 		infected_states=['Infected']
 		state_proportion={
-							'Susceptible':0.97,
-							'Infected':0.03,
+							'Susceptible':0.99,
+							'Infected':0.01,
 							'Recovered':0
 						}
 		Model.StochasticModel.__init__(self,individual_types,infected_states,state_proportion)
