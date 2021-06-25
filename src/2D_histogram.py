@@ -2,18 +2,19 @@ import sys
 import ReadFile
 import pickle
 import World
+import random
 import importlib.util
 import os.path as osp
 import policy_generator as pg
 import matplotlib
 import matplotlib.pyplot as plt
-matplotlib.use("pgf")
-matplotlib.rcParams.update({
-    "pgf.texsystem": "pdflatex",
-    'font.family': 'serif',
-    'text.usetex': True,
-    'pgf.rcfonts': False,
-})
+# matplotlib.use("pgf")
+# matplotlib.rcParams.update({
+#     "pgf.texsystem": "pdflatex",
+#     'font.family': 'serif',
+#     'text.usetex': True,
+#     'pgf.rcfonts': False,
+# })
 import numpy as np
 
 def module_from_file(module_name, file_path):
@@ -81,7 +82,7 @@ def get_policy(example_path):
     return policy_list, event_restriction_fn
 
 if __name__=="__main__":
-
+    random.seed(42)
     example_path = get_example_path()
     config_filename = get_config_path(example_path)
 
@@ -99,7 +100,7 @@ if __name__=="__main__":
 
     fp = open("2D_histogram.txt","w")
     num_tests = 90
-    pools_list = [(3,2),(4,2),(5,2),(None,None)]
+    pools_list = [(1,1),(2,1),(3,2),(None,None)]
     tdicts = []
     ttinfect = []
     ttq = []
@@ -145,8 +146,8 @@ if __name__=="__main__":
 
     # Make the plot
     plt.bar(br1, ttinfect, color ='r', width = barWidth,edgecolor ='grey', label ='Total Infection')
-    plt.bar(br2, ttq, color ='g', width = barWidth,edgecolor ='grey', label ='Total Quarantined Days')
-    plt.bar(br3, ttfp, color ='b', width = barWidth,edgecolor ='grey', label ='Total False Positive')
+    # plt.bar(br2, ttq, color ='g', width = barWidth,edgecolor ='grey', label ='Total Quarantined Days')
+    plt.bar(br2, ttfp, color ='b', width = barWidth,edgecolor ='grey', label ='Total False Positive')
 
     # Adding Xticks
     # plt.xlabel('Branch', fontweight ='bold', fontsize = 15)

@@ -59,7 +59,7 @@ def legend():
   for c in color_list.keys():
     points.append(ax.scatter(0,0,color=color_list[c],s=20,alpha=0.8,edgecolors='none'))
   legendFig = plt.figure("Legend plot")
-  legendFig.legend(points, color_list.keys(), loc='center')
+  legendFig.legend(points, color_list.keys(), loc='center', prop = {'size':16})
   legendFig.savefig('legend.pgf')
 
 legend()

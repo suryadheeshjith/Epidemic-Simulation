@@ -4,13 +4,13 @@ import csv
 import copy
 import matplotlib
 import matplotlib.pyplot as plt
-# matplotlib.use("pgf")
-# matplotlib.rcParams.update({
-#     "pgf.texsystem": "pdflatex",
-#     'font.family': 'serif',
-#     'text.usetex': True,
-#     'pgf.rcfonts': False,
-# })
+matplotlib.use("pgf")
+matplotlib.rcParams.update({
+    "pgf.texsystem": "pdflatex",
+    'font.family': 'serif',
+    'text.usetex': True,
+    'pgf.rcfonts': False,
+})
 
 k=1
 def print_optimal_rows(file_name, a,b):
@@ -61,22 +61,31 @@ def plot(X,Y,Z,title='',xlabl='',ylabl='',fname='', leg = False):
         plt.show()
         plt.clf()
     else:
-        plt.subplot(1, 3, 1)
+        plt.subplot(1, 2, 1)
+        f = plt.figure()
+        f.set_figwidth(14)
+        f.set_figheight(5)
+        # fig,ax=plt.subplots()
+        color_list={(1,1):'cyan',(2,1):'blue',(3,2):'grey',(4,2):'pink',(5,2):'orange',(5,3):'red',(6,2):'purple',(6,3):'green'}
+        points=[]
+        for c in color_list.keys():
+            points.append(plt.scatter([],[],color=color_list[c],s=20,alpha=0.8,edgecolors='none'))
+        plt.subplot(1, 2, 2)
+        plt.axis("off")
+        #legendFig = plt.figure("Legend plot")
+        plt.legend(points, color_list.keys(), prop={'size': 16}, loc = 'center')
+        plt.subplot(1, 2, 1)
+        # f = plt.figure()
+        # f.set_figwidth(30)
+        # f.set_figheight(5)
         for i in range(len(X)):
             plt.scatter(X[i],Y[i],color=Z[0][i],s=20,alpha=0.8,edgecolors='none')
         plt.xlabel(xlabl)
         plt.ylabel(ylabl)
         plt.title(title)
-        # fig,ax=plt.subplots()
-        plt.subplot(1, 3, 3)
-        color_list={(1,1):'cyan',(2,1):'blue',(3,2):'grey',(4,2):'pink',(5,2):'orange',(5,3):'red',(6,2):'purple',(6,3):'green'}
-        points=[]
-        for c in color_list.keys():
-            points.append(plt.scatter(0,0,color=color_list[c],s=20,alpha=0.8,edgecolors='none'))
-        plt.subplot(1, 3, 2)
-        legendFig = plt.figure("Legend plot")
-        legendFig.legend(points, color_list.keys(), loc='center', prop={'size': 13})
-        plt.show()
+        plt.savefig('fig_{0}_3.pgf'.format(fname))
+        # plt.show()
+        plt.clf()
 
 def frame(mat):
     out_mat = []
@@ -159,8 +168,8 @@ def clean(ls, k, l):
 # plot(X,Y,clean(Z, 9, 10),"Optimal pooling strategy given False Negative and False Positive rates","False Negative rate","False Positive rate", "fn_fp")
 # #
 # # # # n, p
-# X,Y,Z = print_optimal_rows('np.csv','n','p')
-# plot(X,Y,clean(Z, 5, 6),"Optimal pooling strategy given n and p","Number of agents (n)","Probability of edge (p)","np")
+X,Y,Z = print_optimal_rows('np.csv','n','p')
+plot(X,Y,clean(Z, 5, 6),"Optimal pooling strategy given n and p","Number of agents (n)","Probability of edge (p)","np",True)
 # #
 # #
 # # # Gap tests, tests_per_period
@@ -169,8 +178,8 @@ def clean(ls, k, l):
 
 
 # Turnaround time, restriction time
-X,Y,Z = print_optimal_rows('turnaround_restriction_90_100.csv','turnaround_time','restriction_time')
-plot(X,Y,clean(Z, 5, 10),"Optimal pooling strategy given Turnaround and Restriction time","Test result turnaround time","Positive agent restriction time","turnaround_restriction", True)
+# X,Y,Z = print_optimal_rows('turnaround_restriction_90_100.csv','turnaround_time','restriction_time')
+# plot(X,Y,clean(Z, 5, 10),"Optimal pooling strategy given Turnaround and Restriction time","Test result turnaround time","Positive agent restriction time","turnaround_restriction")
 
 #
 # plt.show()
