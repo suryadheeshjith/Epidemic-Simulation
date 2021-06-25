@@ -58,25 +58,25 @@ def print_optimal_rows(file_name, a,b):
 
 
 # Beta, gamma
-# X,Y,Z = print_optimal_rows('beta_gamma.csv','beta','gamma')
-# plot(X,Y,Z,"Optimal pooling strategy given Beta and Gamma","Rate of Infection(Beta)","Rate of Recovery(Gamma) ")
+X,Y,Z = print_optimal_rows('beta_gamma_90_100.csv','beta','gamma')
+plot(X,Y,Z,"Optimal pooling strategy given Beta and Gamma","Rate of Infection(Beta)","Rate of Recovery(Gamma) ")
 #
 # # fn, fp
 X,Y,Z = print_optimal_rows('fn_fp.csv','fn','fp')
 plot(X,Y,Z,"Optimal pooling strategy given False Negative and False Positive rates","False Negative rate","False Positive rate")
-#
+
 # # n, p
-# X,Y,Z = print_optimal_rows('np.csv','n','p')
-# plot(X,Y,Z,"Optimal pooling strategy given n and p","Number of agents (n)","Probability of edge (p)")
-#
-#
+X,Y,Z = print_optimal_rows('np.csv','n','p')
+plot(X,Y,Z,"Optimal pooling strategy given n and p","Number of agents (n)","Probability of edge (p)")
+
+
 # # Gap tests, tests_per_period
-X,Y,Z = print_optimal_rows('gap_tests_22_Jun.csv','testing_gap','tests_per_period')
+X,Y,Z = print_optimal_rows('gap_tests.csv','testing_gap','tests_per_period')
 plot(X,Y,Z,"Optimal pooling strategy given number of tests and period for testing","Gap between testing periods","Tests per testing period")
 
 
 # Turnaround time, restriction time
-X,Y,Z = print_optimal_rows('turnaround_restriction_21_Jun_3.csv','turnaround_time','restriction_time')
+X,Y,Z = print_optimal_rows('turnaround_restriction_90_100.csv','turnaround_time','restriction_time')
 plot(X,Y,Z,"Optimal pooling strategy given Turnaround and Restriction time","Test result turnaround time","Positive agent restriction time")
 
 

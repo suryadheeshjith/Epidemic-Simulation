@@ -8,13 +8,13 @@ import policy_generator as pg
 import matplotlib
 import matplotlib.pyplot as plt
 import random
-# matplotlib.use("pgf")
-# matplotlib.rcParams.update({
-#     "pgf.texsystem": "pdflatex",
-#     'font.family': 'serif',
-#     'text.usetex': True,
-#     'pgf.rcfonts': False,
-# })
+matplotlib.use("pgf")
+matplotlib.rcParams.update({
+    "pgf.texsystem": "pdflatex",
+    'font.family': 'serif',
+    'text.usetex': True,
+    'pgf.rcfonts': False,
+})
 import numpy as np
 
 def module_from_file(module_name, file_path):
@@ -98,19 +98,16 @@ if __name__=="__main__":
     # User Model
     model = get_model(example_path)
 
-    fp = open("multi_histogram.txt","w")
-    fp.write("(Infection cost, quarantine cost, false positive cost, test_cost)\n")
     cost_structures = {
-                        '(20,1,1,1)':(20,1,1,1),
-                        '(6,2,4,2)':(6,2,4,2),
-                        '(5,1,4,1)':(5,1,4,1),
-                        '(15,4,4,1)':(15,4,4,1),
-                        '(8,1,3,3)':(8,1,3,3)
+                        '(2,2,2,25)':(25,2,2,2),
+                        '(3,2,5,20)':(20,5,2,3),
+                        '(2,1,1,30)':(30,1,1,2),
+                        '(1,4,2,20)':(20,2,4,1)
                         }
     # cost_structures = {'(10,3,1)':(10,3,1),'(5,3,1)':(5,3,1)}
-    pools_list = [(1,1),(2,1),(3,2),(4,2),(5,2),(5,3),(6,2),(6,3)]
+    pools_list = [(1,1),(2,1),(4,2),(5,3),(6,2),(7,2)]
     testing_gap=1
-    tests_per_period=170
+    tests_per_period=90
     turnaround_time=0
     restriction_time=6
     fn=0.1
@@ -118,30 +115,27 @@ if __name__=="__main__":
     cost_dict = {}
 
 
-    for key in cost_structures.keys():
-        value = cost_structures[key]
-        inf_cost = value[0]
-        q_cost = value[1]
-        fp_cost = value[2]
-        t_cost = value[3]
-        fp.write("{0}\n".format(key))
-        print(key)
 
-        for i,j in pools_list:
-            print(i,j)
-            policy_list, event_restriction_fn =  pg.generate_group_testing_colab(i, j,testing_gap,tests_per_period,turnaround_time,restriction_time,fn,falsep)
-            world_obj=World.World(config_obj,model,policy_list,event_restriction_fn,agents_filename,interactions_files_list,locations_filename,events_files_list)
-            tdict, total_infection, total_quarantined_days, wrongly_quarantined_days, total_test_cost,\
-            total_positives, total_false_positives = world_obj.simulate_worlds(plot=False, extra=True)
+
+    for i,j in pools_list:
+        print(i,j)
+        policy_list, event_restriction_fn =  pg.generate_group_testing_colab(i, j,testing_gap,tests_per_period,turnaround_time,restriction_time,fn,falsep)
+        world_obj=World.World(config_obj,model,policy_list,event_restriction_fn,agents_filename,interactions_files_list,locations_filename,events_files_list)
+        tdict, total_infection, total_quarantined_days, wrongly_quarantined_days, total_test_cost,\
+        total_positives, total_false_positives = world_obj.simulate_worlds(plot=False, extra=True)
+        for key in cost_structures.keys():
+            value = cost_structures[key]
+            inf_cost = value[0]
+            q_cost = value[1]
+            fp_cost = value[2]
+            t_cost = value[3]
             total_cost = inf_cost*total_infection+q_cost*total_quarantined_days+fp_cost*total_false_positives + t_cost*total_test_cost
             try:
                 cost_dict[key].append(total_cost)
             except:
                 cost_dict[key] = []
                 cost_dict[key].append(total_cost)
-            fp.write("Total Cost for ({0},{1}) = {2}\n".format(i,j,total_cost))
 
-    fp.close()
 
     ls = []
     for (i,j) in pools_list:
@@ -165,14 +159,16 @@ if __name__=="__main__":
     labels = cost_structures.keys()
     for idx,label in enumerate(labels):
         plt.bar(brs[idx], cost_dict[label], width = barWidth,edgecolor ='grey', label =label)
+        print(cost_dict[label])
 
     # Adding Xticks
     plt.xlabel('Pooling Strategy')
     plt.ylabel('Total Cost')
+    plt.ylim(10000,30000)
     middle = len(cost_structures)/2
     plt.xticks([r + middle*barWidth for r in range(len(pools_list))],ls)
-    plt.title("Total Costs for different cost structures - (Infection cost, Quarantine cost, False positive cost, test_cost)")
+    plt.title("Total Costs for different cost structures - (test_cost, false positive cost, quarantine cost, Infection cost)")
 
     plt.legend()
-    plt.show()
-    # plt.savefig('2D_histogram.pgf')
+    # plt.show()
+    plt.savefig('2D_histogram.pgf')
