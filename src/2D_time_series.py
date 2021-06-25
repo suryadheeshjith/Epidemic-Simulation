@@ -99,7 +99,7 @@ if __name__=="__main__":
     ##########################################################################################
 
     fp = open("2D_time_series.txt","w")
-    num_tests = 60
+    num_tests = 90
     pools_list = [(None,None),(1,1),(2,1),(3,2)]
     tdicts = []
     for i,j in pools_list:

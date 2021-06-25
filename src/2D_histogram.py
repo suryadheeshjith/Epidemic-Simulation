@@ -98,7 +98,7 @@ if __name__=="__main__":
     ##########################################################################################
 
     fp = open("2D_histogram.txt","w")
-    num_tests = 100
+    num_tests = 90
     pools_list = [(3,2),(4,2),(5,2),(None,None)]
     tdicts = []
     ttinfect = []
@@ -154,6 +154,6 @@ if __name__=="__main__":
     plt.xticks([r + barWidth for r in range(len(ttinfect))],ls)
 
     plt.legend()
-    # plt.show()
-    plt.savefig('2D_histogram.pgf')
+    plt.show()
+    #plt.savefig('2D_histogram.pgf')
     ###############################################################################################
