@@ -117,11 +117,15 @@ if __name__=="__main__":
         fp.write(str(tdict)+"\n")
         tdicts.append(tdict)
         for i,state in enumerate(tdict.keys()):
+            for j in range(len(tdict[state])):
+                tdict[state][j] /= 1000
             plt.plot(tdict[state], color = color_dict[key], linestyle = pattern[i], label =state+"_"+str(key))
 
     fp.close()
 
     plt.legend(loc='upper right', shadow=True, bbox_to_anchor=(1.12, 1))
+    plt.xlabel("Timesteps")
+    plt.ylabel("Population proportion")
     # plt.show()
     plt.savefig('multi_SIR.pgf')
 
