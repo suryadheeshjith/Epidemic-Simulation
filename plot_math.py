@@ -5,7 +5,7 @@ import numpy as np
 
 false_neg = 0.1
 false_pos = 0.1
-lambda_ = 0.01
+lambda_ = 0.1
 ntpa_max=6
 napt_max=6
 ntpa_start=1
@@ -47,9 +47,9 @@ arr = np.zeros((napt_max,ntpa_max))
 for i in range(1,napt_max+1):
     for j in range(1,ntpa_max+1):
         # arr[i-1][j-1] = dummy_plot(i,j)
-        arr[i-1][j-1] = non_infected_value(false_neg, false_pos, lambda_, i, j, pos= True)
+        # arr[i-1][j-1] = non_infected_value(false_neg, false_pos, lambda_, i, j, pos= True)
         # arr[i-1][j-1] = non_infected_value(false_neg, false_pos, lambda_, i, j, pos= False)
-        # arr[i-1][j-1] = infected_value(false_neg, false_pos, lambda_, i, j, pos= True)
+        arr[i-1][j-1] = infected_value(false_neg, false_pos, lambda_, i, j, pos= True)
         # arr[i-1][j-1] = infected_value(false_neg, false_pos, lambda_, i, j, pos= False)
 arr = np.transpose(arr)
 
